@@ -1,0 +1,43 @@
+---
+// Media in an instrument-style frame: corner ticks, and a one-line mono caption
+// with a channel label, e.g. "CH1 · expressive-motion · caption … open →".
+import Media from './Media.astro';
+import ViewLink from './ViewLink.astro';
+interface Props {
+  src: string;
+  alt: string;
+  poster?: string;
+  caption?: string;
+  label?: string; // e.g. the project slug
+  channel?: string; // default "CH1"
+  href?: string; // set: caption gets "open →"; unset: click opens the viewer
+  link?: { label: string; url: string }; // e.g. the post the video comes from
+  position?: string;
+  fit?: 'cover' | 'contain';
+}
+const { src, alt, poster, caption, label, channel = 'CH1', href, link, position, fit } = Astro.props;
+---
+<figure class="frame">
+  <div class="frame-box">
+    {href ? (
+      <Media src={src} alt={alt} poster={poster} position={position} fit={fit} />
+    ) : (
+      <ViewLink src={src} alt={alt} caption={caption} poster={poster} class="frame-link">
+        <Media src={src} alt={alt} poster={poster} position={position} fit={fit} />
+      </ViewLink>
+    )}
+    <span class="tick tl" aria-hidden="true"></span>
+    <span class="tick tr" aria-hidden="true"></span>
+    <span class="tick bl" aria-hidden="true"></span>
+    <span class="tick br" aria-hidden="true"></span>
+  </div>
+  {(caption || label) && (
+    <figcaption class="frame-cap">
+      <span class="ch">{channel}</span>
+      {label && <span class="frame-label">{label}</span>}
+      {caption && <span class="frame-text">{caption}</span>}
+      {link && <a href={link.url} class="frame-open" target="_blank" rel="noopener">{link.label} ↗</a>}
+      {href && <a href={href} class="frame-open">open →</a>}
+    </figcaption>
+  )}
+</figure>

@@ -1,0 +1,50 @@
+---
+title: K1 Cartwheel
+summary: Teaching the Booster K1 a cartwheel from a video. It works in simulation; on the robot it still falls.
+start: "2026-10"
+end: present
+robots: [Booster K1]
+status: experimental; works in sim, not yet on the robot
+role: Motion from video, training, deployment and the hardware tests.
+stack: [Python, PyTorch, Isaac Lab, MuJoCo, BeyondMimic, GVHMR, GMR, ONNX Runtime]
+media:
+  src: /media/k1-cartwheel/sim-full.mp4
+  poster: /media/k1-cartwheel/sim-full.jpg
+  alt: Simulated K1 standing, doing a cartwheel and returning to standing in MuJoCo
+  caption: The final policy in MuJoCo, from standing to a cartwheel and back.
+gallery:
+  - src: /media/k1-cartwheel/robot-attempt.mp4
+    poster: /media/k1-cartwheel/robot-attempt.jpg
+    alt: The real K1 starting a cartwheel in the lab and falling
+    caption: A try on the real robot. It goes over but the hand doesn't hold it.
+    wide: true
+  - src: /media/k1-cartwheel/reference.mp4
+    poster: /media/k1-cartwheel/reference.jpg
+    alt: The cartwheel motion from video, retargeted to the K1, played back without physics
+    caption: The reference motion, from video to the K1.
+order: 7
+---
+
+## Summary
+
+A cartwheel is the hardest move I've tried on the K1. The policy does it in simulation,
+but on the real robot it hasn't finished one yet: the hand doesn't take the weight and
+the robot goes down.
+
+## How
+
+The motion comes from a cartwheel video, through GVHMR and GMR to the K1. I trained it
+with BeyondMimic in Isaac Lab, first as is, then reworked it for the robot: only inputs
+the robot can really measure, a standing start and a standing finish, the head held at
+zero, and penalties for running the motors and joints at their limits. In MuJoCo the
+final policy goes from standing to a cartwheel and back.
+
+## On the robot
+
+It falls in the middle of the move. The motors on the robot pulled up to about 2.7× the
+torque the sim allows, because the policy leans on motor limits that aren't the same on
+the robot. During the fast rotation the IMU orientation also drifts far from what the
+gyro says, and the policy reacts strongly to it.
+
+Next: match the motor limits between training, sim and robot, make the policy robust to
+the orientation input, and check that the hand and head clear the floor, then train again.

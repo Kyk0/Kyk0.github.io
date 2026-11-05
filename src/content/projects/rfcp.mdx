@@ -1,0 +1,69 @@
+---
+title: RFCP, Robot Fashion Catwalk Policy
+summary: Our Ghost Trial 04 entry. A G1 walks the runway, turns, poses and walks back, by fine-tuning SONIC.
+start: "2026-08"
+end: "2026-09"
+robots: [Unitree G1]
+venue: Ultimate Bots Ghost Trial 04, Performance Arts
+status: submitted, simulation
+role: "Team ATR. Made the catwalk data, fine-tuned and evaluated SONIC, exported the policy, made the video and released everything."
+stack: [Python, PyTorch, NVIDIA SONIC, Isaac Lab, MuJoCo, ONNX Runtime]
+links:
+  - { label: code, url: "https://github.com/Kyk0/rfcp" }
+  - { label: policy + ONNX, url: "https://huggingface.co/Kyry10/rfcp" }
+  - { label: dataset, url: "https://huggingface.co/datasets/Kyry10/rfcp-dataset" }
+  - { label: video, url: "https://youtu.be/-qTc33E9ujQ" }
+  - { label: hackathon, url: "https://www.ultimatebots.com/hackathon" }
+media:
+  src: /media/rfcp/rfcp-vs-runway.mp4
+  poster: /media/rfcp/rfcp-vs-runway.jpg
+  alt: Unitree G1 doing the catwalk in simulation next to a human model on a real runway
+  caption: RFCP in MuJoCo next to a real runway walk.
+gallery:
+  - src: /media/rfcp/results.jpg
+    alt: Results table, stock SONIC against RFCP
+    caption: Stock vs ours, same machine and procedure.
+  - src: /media/rfcp/demo.mp4
+    poster: /media/rfcp/demo.jpg
+    alt: The submitted demo video, a G1 catwalk on a MuJoCo fashion-show set with before and after comparisons
+    caption: The demo video we submitted.
+    wide: true
+featured: true
+order: 3
+---
+
+## Summary
+
+Robots keep showing up at fashion shows, but none of them walks like a model. Stock
+SONIC walks a runway like a hallway. For Ghost Trial 04 we fine-tuned NVIDIA's SONIC on
+the Unitree G1 to do a full catwalk: down the runway, turn, pose, walk back. It grew out
+of my [catwalk AMP work on the K1](/projects/catwalk-amp/).
+
+## How
+
+- The catwalk clip, m7, was made on the SOMA human body, retargeted to the G1's 29 joints and converted to SONIC's motion format.
+- Fine-tuned from the released SONIC checkpoint in Isaac Lab, three variants: m7 only, m7 ×14 plus 30 BONES-SEED walk and turn clips so it doesn't forget normal walking, and m7 ×25 with the same clips.
+- A checkpoint every 25 iterations, evaluated all the time. The winner is the ×14 mix at step 250: it passed all 30 control clips with no self-collisions and no extra jitter.
+- Checked with SONIC's eval plus our own: gait stats, jitter, self-collision, 32 held-out clips, runs with random mass, friction and pushes, and the ONNX policy in MuJoCo.
+
+## Results
+
+| | Stock SONIC | RFCP |
+| --- | ---: | ---: |
+| Catwalk path error | 366 mm | 218 mm |
+| Turn and pose error | 502 mm | 458 mm |
+| End drift from mark | 0.61 m | 0.27 m |
+| Random mass, friction, pushes | 4/5 | 5/5, no falls |
+| Walking and turning controls | 30/30 | 30/30 |
+| ONNX in MuJoCo, drift | 0.64 m | 0.38 m, no falls |
+
+What didn't work: the steps stayed wide, 0.127 m against a 0.033 m target. So the result
+is a policy that hits its marks, not one with narrow model steps.
+
+## Release
+
+Everything is open. Code on GitHub (MIT), the policy and ONNX files on Hugging Face under
+the NVIDIA Open Model License, and the catwalk dataset under CC BY 4.0. The BONES-SEED
+clips can't be redistributed, so the dataset lists their names only.
+
+Motion Data by Bones Studio. SONIC by NVIDIA.

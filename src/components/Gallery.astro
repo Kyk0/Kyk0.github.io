@@ -1,0 +1,20 @@
+---
+// A project's extra videos and photos. Click opens the viewer.
+import Media from './Media.astro';
+import ViewLink from './ViewLink.astro';
+import { hideTodo } from '../lib/util';
+interface Props {
+  items: { src: string; alt: string; caption?: string; poster?: string; wide?: boolean }[];
+}
+const { items } = Astro.props;
+---
+<div class="gallery">
+  {items.map((m) => (
+    <figure class:list={{ wide: m.wide }}>
+      <ViewLink src={m.src} alt={m.alt} caption={m.caption} poster={m.poster} class="gallery-link">
+        <Media src={m.src} alt={m.alt} poster={m.poster} />
+      </ViewLink>
+      {m.caption && !hideTodo(m.caption) && <figcaption class:list={{ todo: m.caption.startsWith('TODO') }}>{m.caption}</figcaption>}
+    </figure>
+  ))}
+</div>

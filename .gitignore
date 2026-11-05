@@ -1,0 +1,9 @@
+_sources/*.pdf
+node_modules/
+dist/
+.astro/
+.DS_Store
+_sources/site-media-hidden/
+WHERE.md
+drafts/
+dev.log

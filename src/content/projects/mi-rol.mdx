@@ -1,0 +1,71 @@
+---
+title: Mi-RoL
+summary: A multi-tier LLM framework for empathetic conversation on the Pepper robot, grounded in Motivational Interviewing. Tested in a 40-participant study.
+start: "2026"
+robots: [Pepper]
+venue: IHCI 2026
+status: accepted · co-author
+role: "Co-author. Joint work, led by Raiyan Ashraf."
+stack: [GPT-4o, Gemini 2.5 Flash, Whisper, Silero VAD]
+links: []
+media:
+  src: /media/mi-rol/study-setup.png
+  alt: "Study flow: consent and pre-survey, conversation with Pepper using speech, affect and visual cues, then survey and interview"
+  caption: "Study flow from the paper: pre-survey, conversation with Pepper, then survey and interview."
+  fit: contain
+papers:
+  - title: "Can Motivational Interviewing Guided Dialogue Improve Empathy in Human–Robot Interaction? A Controlled Study with Baseline Comparison"
+    authors: [Raiyan Ashraf, Yanni Liu, Kyrylo Kolesnichenko, Sruthi Ganji, Jong-Hoon Kim, Ju Yup Lee]
+    year: 2026
+    venue: International Conference on Intelligent Human–Computer Interaction (IHCI 2026)
+    status: accepted
+    selected: true
+    todo: links once published
+other: true
+order: 8
+---
+
+## Summary
+
+**Co-author.** This is joint work with Raiyan Ashraf (lead), Yanni Liu, Sruthi Ganji,
+Jong-Hoon Kim and Ju Yup Lee.
+
+LLM-based social robots mostly react to the last thing said. Mi-RoL gives the
+conversation a structure based on Motivational Interviewing (MI), and grounds it in the
+user's situation: what the robot sees, what it knows about the user, and what they
+talked about before.
+
+## How it works
+
+The framework splits **reasoning** from **response**. At each stage boundary a bigger
+reasoning model looks at the context, estimates engagement and emotion, picks the
+strategy and decides when to move on. A fast response model says the actual lines in
+between. The stages are Intro, Engage, Affirm & Reflect, Evoke and Expand.
+
+Speech is transcribed with Whisper and Silero voice activity detection. GPT-4o picks out
+the user's appearance and the objects around them, and that goes into one shared
+context together with the user's personal info.
+
+<Figure src="/media/mi-rol/system-overview.png" alt="Mi-RoL system overview: personal information, visual cues and speech feed a unified context; a reasoning layer and a response layer drive five MI stages" caption="System overview: the reasoning layer plans and moves between MI stages, the response layer talks." />
+
+Nine model pairings were compared first: three reasoning models (GPT-4o, Gemini 2.5 Pro,
+Llama 3 8B) against three response models (GPT-4o-mini, Gemini 2.5 Flash, Llama 3.2 3B),
+rated by four researchers. GPT-4o for reasoning with Gemini 2.5 Flash for responses came
+out on top and was used in the study.
+
+## Study
+
+40 participants, between-subject, with a physical Pepper. Each person had a 7–10 minute
+conversation with either Mi-RoL or a baseline: unstructured, reactive dialogue from a
+single GPT-4o.
+
+| | Baseline | Mi-RoL | effect size d |
+| --- | ---: | ---: | ---: |
+| Perceived empathy | 3.46 | 3.90 | 0.68 |
+| User engagement | 3.58 | 4.06 | 0.75 |
+| Social presence | 3.15 | 3.88 | 0.88 |
+| Intention to use | 3.55 | 4.12 | 0.65 |
+
+All four were significantly better with Mi-RoL (5-point scales, p < .05), and social
+presence improved the most. People liked it most when the robot noticed something they
+had with them, like a backpack or a tumbler, and connected it to their own stories.

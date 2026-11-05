@@ -1,0 +1,17 @@
+---
+// The paper under review. Only the title, venue and one figure: no authors or results.
+interface Props {
+  n?: number;
+}
+const { n } = Astro.props;
+---
+<li class:list={['pub', 'has-teaser', { numbered: n }]}>
+  {n && <span class="ref-no">[{n}]</span>}
+  <a href="/media/publications/under-review-heel-heights.jpg" class="pub-teaser" data-viewer data-type="image" data-alt="The Booster K1 foot in four heel heights, A to D" data-caption="Walking in Heels">
+    <img class="media thumb" src="/media/publications/under-review-heel-heights.jpg" alt="The Booster K1 foot in four heel heights, A to D" loading="lazy" decoding="async" />
+  </a>
+  <div class="citation">
+    <span class="pub-title">Walking in Heels: Heel-Aware Humanoid Gait Under Changing Contact Geometry</span>
+    <span class="pub-venue"><em>IEEE International Conference on Robotics and Automation (ICRA 2027)</em><span class="meta"> · under review</span></span>
+  </div>
+</li>

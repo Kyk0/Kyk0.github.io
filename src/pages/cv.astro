@@ -1,0 +1,94 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { SITE, sortProjects, getPapers, range, isTodo, hideTodo } from '../lib/util';
+
+const sections = (await getCollection('cv')).sort((a, b) => a.data.order - b.data.order);
+const pubs = (await getPapers()).map((x) => x.paper);
+const projects = sortProjects(await getCollection('projects', (p) => !p.data.soon));
+const bio = (await getEntry('meta', 'bio'))!;
+const links = bio.data.links?.filter((l) => l.url && !l.url.endsWith('.pdf')) ?? [];
+
+// Publications (order 4) and projects (order 5) come from the project files.
+const before = sections.filter((s) => s.data.order < 4);
+const after = sections.filter((s) => s.data.order > 5);
+---
+<Base title="CV" description="Curriculum vitae of Kyrylo Kolesnichenko: education, research experience, publications, projects, skills.">
+<div class="cv">
+  <h1>Curriculum vitae</h1>
+  <p class="page-links">
+    <a href="/cv.pdf">download pdf</a>
+    {links.map((l) => <a href={l.url}>{l.label}</a>)}
+  </p>
+
+  {before.map((s) => (
+    <section>
+      <h2>{s.data.title}</h2>
+      {s.data.entries.map((e) => (
+        <div class="cv-entry">
+          <strong>{e.what}</strong>
+          {e.when && <span class="meta when">{e.when}</span>}
+          {(e.where || e.place) && <span class="where">{[e.where, e.place].filter(Boolean).join(', ')}</span>}
+          {e.note && <span class="note">{e.note}</span>}
+          {e.bullets.length > 0 && <ul>{e.bullets.map((b) => <li>{b}</li>)}</ul>}
+        </div>
+      ))}
+    </section>
+  ))}
+
+  <section>
+    <h2>Publications</h2>
+    <ol class="cv-compact" reversed>
+      {pubs.map((p) => (
+        <li>
+          {p.authors.map((a, i) => (
+            <>{a.includes(SITE.me) ? <strong>{a}</strong> : a}{i < p.authors.length - 1 ? ', ' : '. '}</>
+          ))}
+          “{/[.?!]$/.test(p.title) ? p.title : `${p.title}.`}” <em>{p.venue}</em>, {p.year}{p.status && `, ${p.status}`}.
+          {p.arxiv && <> <a href={`https://arxiv.org/abs/${p.arxiv}`} class="meta">arXiv:{p.arxiv}</a></>}
+        </li>
+      ))}
+    </ol>
+    <p class="cv-note">One paper at IEEE ICRA 2027, under review.</p>
+  </section>
+
+  <section>
+    <h2>Selected projects</h2>
+    {projects.filter((p) => p.data.featured).map((p) => (
+      <div class="cv-entry">
+        <span><strong><a href={`/projects/${p.id}/`}>{p.data.title}</a></strong></span>
+        {!hideTodo(p.data.start) && <span class:list={['meta when', { todo: isTodo(p.data.start) }]}>{range(p.data.start, p.data.end)}</span>}
+        <span class="note">{p.data.summary}</span>
+      </div>
+    ))}
+    <p class="cv-note"><a href="/projects/">All {projects.length} projects</a></p>
+  </section>
+
+  {after.map((s) => (
+    <section>
+      <h2>{s.data.title}</h2>
+      {s.data.compact ? (
+        <dl class="cv-skills">
+          {s.data.entries.map((e) => (
+            <>
+              <dt>{e.what}</dt>
+              <dd>{e.note}</dd>
+            </>
+          ))}
+        </dl>
+      ) : (
+        s.data.entries.map((e) => (
+          <div class="cv-entry">
+            <strong>{e.what}</strong>
+            {e.when && <span class="meta when">{e.when}</span>}
+            {isTodo(e.where) ? !hideTodo(e.where) && <span class="where"><span class="todo">{e.where}</span></span>
+              : (e.where || e.place) && <span class="where">{[e.where, e.place].filter(Boolean).join(', ')}</span>}
+            {e.note && !hideTodo(e.note) && (e.note.startsWith('TODO') ? <span class="note"><span class="todo">{e.note}</span></span> : <span class="note">{e.note}</span>)}
+            {e.bullets.length > 0 && <ul>{e.bullets.map((b) => <li>{b}</li>)}</ul>}
+          </div>
+        ))
+      )}
+    </section>
+  ))}
+</div>
+</Base>

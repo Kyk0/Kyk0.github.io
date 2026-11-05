@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts } from '../../lib/util';
+
+// /blog/ is built only once there is a post (drafts count only in `npm run dev`).
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.length ? [{ params: { index: undefined }, props: { posts } }] : [];
+}
+const { posts } = Astro.props;
+---
+<Base title="Blog" description="Workshops, talks, press and technical notes by Kyrylo Kolesnichenko.">
+  <header class="page-head">
+    <h1>Blog</h1>
+    <p class="lede">Workshops I ran, talks and press, and technical notes from training humanoid policies.</p>
+  </header>
+  <PostList posts={posts} />
+</Base>

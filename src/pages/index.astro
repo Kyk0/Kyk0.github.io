@@ -1,0 +1,105 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Pub from '../components/Pub.astro';
+import UnderReview from '../components/UnderReview.astro';
+import Frame from '../components/Frame.astro';
+import PostList from '../components/PostList.astro';
+import { mediaExists } from '../lib/media';
+import { sortProjects, getPapers, getPosts, SITE } from '../lib/util';
+
+const bio = (await getEntry('meta', 'bio'))!;
+const { Content: Bio } = await render(bio);
+const allProjects = await getCollection('projects', (p) => !p.data.soon);
+const projects = sortProjects(allProjects.filter((p) => p.data.featured));
+const allPapers = await getPapers();
+const pubs = allPapers.filter((x) => x.paper.selected);
+const hero = bio.data.hero;
+const posts = (await getPosts()).slice(0, 3);
+
+// Structured data for search engines: who this site is about.
+const site = Astro.site!.href;
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${site}#me`,
+  name: SITE.name,
+  url: site,
+  image: bio.data.portrait ? new URL(bio.data.portrait.src, site).href : undefined,
+  jobTitle: bio.data.role?.split(',')[0],
+  email: 'mailto:kkolesni@kent.edu',
+  affiliation: bio.data.affiliations?.map((a) => ({ '@type': 'Organization', name: a.label, url: a.url })),
+  sameAs: bio.data.links?.map((l) => l.url).filter((u): u is string => !!u && /^https?:/.test(u)),
+  description: SITE.description,
+  knowsAbout: ['Humanoid robotics', 'Reinforcement learning', 'Motion imitation', 'Motion retargeting', 'Sim-to-real transfer'],
+};
+const website = { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE.name, url: site, description: SITE.description, inLanguage: 'en', author: { '@id': `${site}#me` } };
+// The home page is a profile page about the person (Google's ProfilePage rich result).
+const profile = { '@context': 'https://schema.org', '@type': 'ProfilePage', url: site, dateModified: bio.data.updated, mainEntity: { '@id': `${site}#me` } };
+
+// Specification block, derived from content.
+const robotCounts = [...allProjects.flatMap((p) => p.data.robots).reduce((m, r) => m.set(r, (m.get(r) ?? 0) + 1), new Map<string, number>())];
+// Stack: the CV's technical skills (src/content/cv/07-skills.yaml), robots are shown above.
+const skills = ((await getEntry('cv', '07-skills'))?.data.entries ?? []).filter((e) => e.what !== 'Robots');
+const mediaCount = allProjects.reduce((n, p) => n + [p.data.media, ...p.data.gallery].filter((m) => m && mediaExists(m.src)).length, 0);
+---
+<Base jsonld={[person, website, profile]}>
+  <h1 class="sr-only">{SITE.name}</h1>
+
+  {hero && (
+    <Frame
+      src={hero.src}
+      alt={hero.alt}
+      poster={hero.poster}
+      caption={hero.caption}
+      label={hero.href?.split('/').filter(Boolean).pop()}
+      href={hero.href}
+    />
+  )}
+
+  <section class="intro">
+    <Bio />
+  </section>
+
+  <section>
+    <h2 class="sec" id="spec">Specification</h2>
+    <dl class="spec">
+      <dt>robots</dt>
+      <dd>{robotCounts.map(([r, n]) => <span class="chip">{r} <span class="dim">×{n}</span></span>)}</dd>
+      {skills.map((e) => (
+        <>
+          <dt>{e.what.toLowerCase()}</dt>
+          <dd class="spec-stack">{e.note?.split(/,\s*/).map((s, i) => <>{i > 0 && ' · '}<span class="nowrap">{s}</span></>)}</dd>
+        </>
+      ))}
+      <dt>record</dt>
+      <dd class="spec-record">{allProjects.length} projects · {allPapers.length} papers · {mediaCount} videos and photos</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2 class="sec" id="projects">Projects</h2>
+    <ul class="cards">
+      {projects.map((p) => <ProjectCard project={p} />)}
+    </ul>
+    <p class="more"><a href="/projects/">all {allProjects.length} projects →</a></p>
+  </section>
+
+  <section>
+    <h2 class="sec" id="publications">Selected publications</h2>
+    <ul class="pubs">
+      {pubs.map((x, i) => <Pub {...x} n={i + 1} />)}
+      <UnderReview n={pubs.length + 1} />
+    </ul>
+    <p class="more"><a href="/publications/">all publications →</a></p>
+  </section>
+
+  {posts.length > 0 && (
+    <section>
+      <h2 class="sec" id="blog">Recent posts</h2>
+      <PostList posts={posts} summary={false} />
+      <p class="more"><a href="/blog/">all posts →</a></p>
+    </section>
+  )}
+</Base>

@@ -1,0 +1,123 @@
+---
+title: Expressive Motion
+summary: From a monocular runway video to a catwalk gait on the Booster K1.
+start: "2026"
+end: "2026-09"
+robots: [Booster K1]
+venue: IROS 2026 Late Breaking Results (LBR)
+status: published code, poster presented
+role: First author. Built the pipeline, trained the policy and ran the hardware trials.
+stack: [Python, PyTorch, Isaac Lab, MuJoCo, BeyondMimic, GVHMR, GMR]
+links:
+  - { label: code, url: "https://github.com/Kyk0/expressive-motion" }
+  - { label: code (ATR Lab), url: "https://github.com/ATR-Lab/expressive-motion" }
+  - { label: paper (arXiv), url: "https://arxiv.org/abs/2609.27003" }
+  - { label: paper (PDF), url: "/media/expressive-motion/paper.pdf" }
+  - { label: poster (PDF), url: "/media/expressive-motion/poster.pdf" }
+  - { label: project page, url: "https://kyk0.github.io/expressive-motion/" }
+  - { label: video, url: "https://kyk0.github.io/expressive-motion/video/" }
+media:
+  src: /media/expressive-motion/pipeline.mp4
+  poster: /media/expressive-motion/pipeline-poster.jpg
+  alt: "The pipeline step by step: runway video, recovered 3D human motion, the K1 in simulation, and the physical K1 walking"
+  caption: "Runway video → recovered 3D motion → retargeted K1 in simulation → physical K1."
+  link: { label: post on X, url: "https://x.com/irvinxyz/status/2085164925316386998" }
+gallery:
+  - src: /media/expressive-motion/pipeline.jpg
+    alt: Runway video, recovered 3D human motion, retargeted K1 in simulation, and the physical robot
+    caption: The four stages side by side.
+  - src: /media/expressive-motion/k1-catwalk.mp4
+    alt: Booster K1 walking a 5 m runway with a learned catwalk gait
+    caption: The learned catwalk policy on the physical K1.
+  - src: /media/expressive-motion/clip-2.mp4
+    alt: "TODO: what the clip shows"
+    caption: "TODO: caption"
+  - src: /media/expressive-motion/clip-3.mp4
+    alt: "TODO: what the clip shows"
+    caption: "TODO: caption"
+  - { src: /media/expressive-motion/iros-2026/poster.jpg, alt: The IROS 2026 poster, caption: "IROS 2026, Pittsburgh: the poster." }
+  - { src: /media/expressive-motion/iros-2026/presenting.jpg, alt: Kyrylo at his poster at IROS 2026, caption: At my poster. }
+  - { src: /media/expressive-motion/iros-2026/venue.jpg, alt: At the Booster Robotics booth at IROS 2026 with two Booster robots, caption: At the Booster booth. }
+papers:
+  - title: Learning Expressive Humanoid Locomotion from Monocular Runway Videos for Robot Fashion Shows
+    teaser: /media/expressive-motion/pipeline.jpg
+    authors: [Kyrylo Kolesnichenko, Irvin Steve Cardenas, Jong-Hoon Kim]
+    year: 2026
+    date: "2026-09-22"
+    venue: IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2026), Late Breaking Results (LBR)
+    status: presented, poster
+    arxiv: "2609.27003"
+    pdf: /media/expressive-motion/paper.pdf
+    code: https://github.com/Kyk0/expressive-motion
+    video: https://kyk0.github.io/expressive-motion/video/
+    selected: true
+featured: true
+order: 1
+---
+
+## Summary
+
+Locomotion controllers are tuned for stability and speed, not for how the walk looks.
+This project asks whether a humanoid can learn a recognisable runway walk from nothing
+more than an ordinary video of a person doing it. The pipeline takes a single monocular
+clip, recovers the 3D human motion, cleans it up, retargets it to the K1, and produces a
+motion-tracking task that trains a policy in Isaac Lab. The policy is checked in MuJoCo
+before it goes on the robot.
+
+## Pipeline
+
+| Stage | Tool | Notes |
+| --- | --- | --- |
+| Frames | ffmpeg | resample to 30 fps |
+| 3D human motion | GVHMR | SMPL-X in world space, static-camera mode |
+| Clean-up | this repo | foot contacts, floor levelling, root-drift removal |
+| Retargeting | GMR | human skeleton → K1 joints (UMR in later variants) |
+| Policy | BeyondMimic, Isaac Lab | motion-tracking RL |
+| Check | MuJoCo | sim-to-sim before hardware |
+| Robot | Booster K1 | physical trials |
+
+<aside>GVHMR and GMR pin incompatible dependencies, so the repo ships two conda environments. The split is load-bearing.</aside>
+
+## Results
+
+On the physical K1, over a 5 m runway:
+
+- 20 of 20 trials completed without a fall, about 23 steps each.
+- Step width of −0.8 to 1.8 cm for the learned gait, against 5.1 to 11.4 cm for the stock
+  K1 walk. A negative width means the feet cross the midline: the policy produces
+  occasional crossover steps, which is what a runway walk looks like.
+
+The paper is a Late Breaking Results poster at IROS 2026.[^lbr]
+
+[^lbr]: An LBR poster, not a full conference paper. The arXiv version is listed as an "IROS 2026 Poster Paper".
+
+## Release
+
+Notes from packaging the code: what it takes to get a fresh machine to the point where
+`process.py` runs at all.
+
+**Two environments, on purpose.** GVHMR (video → 3D human motion) and GMR (human →
+robot retargeting) pin incompatible dependencies, so the install script creates two:
+
+| Environment | Used for |
+| --- | --- |
+| `expressive-motion` | retargeting, CSV conversion, task generation. The one you activate. |
+| `expressive-motion-gvhmr` | GVHMR inference on the GPU. Called by `process.py`; you never activate it. |
+
+The cost is about 25 GB of disk. The benefit is that neither tool's install can break
+the other's.
+
+**Linux x86_64 only.** The pinned `pytorch3d` wheel exists only for `linux_x86_64`.
+GVHMR needs an NVIDIA GPU with CUDA 12.1+; nothing else in the pipeline does, so
+`bash install.sh main` skips it on machines without a GPU.
+
+**The weights are the real blocker.** About 5.2 GB, none of it downloadable by a
+script: SMPL and SMPL-X need separate registrations with signed licences, and the GVHMR
+checkpoints come from the upstream Google Drive folder. The README has a table of every
+file, its size and what needs it.
+
+**Static camera, so no DPVO.** Runway videos are shot from a fixed camera, so GVHMR runs
+in static-camera mode and the visual-odometry model is skipped.
+
+Isaac Lab itself is never installed by the script. `bash install.sh isaac <env>` only
+adds the Booster packages to an Isaac Lab environment you already have.

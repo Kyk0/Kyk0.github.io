@@ -1,0 +1,24 @@
+---
+import Citation from './Citation.astro';
+import Media from './Media.astro';
+import type { Paper, Project } from '../lib/util';
+interface Props {
+  paper: Paper;
+  project: Project;
+  id?: string;
+  n?: number; // reference number, shown as [n]
+  teaser?: boolean; // project thumbnail on the left; off on the project's own page
+}
+const { paper, project, id, n, teaser = true } = Astro.props;
+const media = !teaser ? undefined : paper.teaser ? { src: paper.teaser, alt: paper.title, poster: undefined } : project.data.media;
+const href = `/projects/${project.id}/`;
+---
+<li class:list={['pub', { 'has-teaser': media, numbered: n }]} id={id}>
+  {n && <span class="ref-no">[{n}]</span>}
+  {media && (
+    <a href={href} class="pub-teaser" tabindex="-1" aria-hidden="true">
+      <Media src={media.src} alt={media.alt} poster={media.poster} thumb />
+    </a>
+  )}
+  <Citation pub={paper} projectHref={teaser ? href : undefined} />
+</li>

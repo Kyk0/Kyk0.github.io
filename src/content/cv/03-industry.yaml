@@ -1,0 +1,10 @@
+title: Industry
+order: 3
+entries:
+  - what: Software Engineering Intern
+    where: SoftServe
+    place: Remote
+    when: Mar 2025 – May 2025
+    bullets:
+      - "Developed user authentication and a recommendation module end to end, from React components to Node.js REST endpoints and PostgreSQL queries."
+      - "Designed relational schemas and integrated REST APIs across the stack; every change went through code review and tests before merge."

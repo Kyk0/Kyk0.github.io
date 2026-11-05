@@ -1,0 +1,101 @@
+---
+title: K1 Shoes
+summary: 3D-printed shoes for the Booster K1. Heels for runway walks, plus Dutch clogs and a light vine pair for the Humanoid Robot Fashion Challenge. Open source, with MuJoCo and URDF models of the K1 wearing them.
+start: "2026-09"
+end: present
+robots: [Booster K1]
+status: open source, 50 mm heels fitted
+role: Designed and printed the shoes, and built the sim models.
+stack: [CAD, 3D printing, MuJoCo, URDF, Python]
+links:
+  - { label: heel files, url: "https://github.com/Kyk0/k1-heel-shoes" }
+  - { label: clog and vine files, url: "https://github.com/Kyk0/k1-klompen" }
+  - { label: heel walking, url: "/projects/k1-heel-walking/" }
+  - { label: hackathon, url: /blog/robot-fashion-challenge/ }
+  - { label: release post, url: /blog/k1-klompen-release/ }
+media:
+  src: /media/k1-heel-shoes/k1-shoes.mp4
+  poster: /media/k1-heel-shoes/k1-shoes.jpg
+  alt: Booster K1 standing in the white 3D-printed heel shoes
+  caption: The K1 in the 50 mm heels.
+  fit: contain
+gallery:
+  - src: /media/k1-heel-shoes/k1-front.jpg
+    alt: Booster K1 standing on a table in white heel shoes
+    caption: Heels on the K1.
+  - src: /media/k1-heel-shoes/printed-pair.jpg
+    alt: A pair of white 3D-printed heel shoes on a cutting mat
+    caption: The 50 mm pair.
+  - src: /media/k1-heel-shoes/shoe-closeup.mp4
+    poster: /media/k1-heel-shoes/shoe-closeup.jpg
+    alt: A printed heel shoe turned in the hand
+    caption: Up close.
+  - src: /media/k1-heel-shoes/printed-side.jpg
+    alt: Side view of the printed heel shoe
+    caption: From the side.
+  - src: /media/k1-klompen/feet.jpg
+    alt: The K1's feet in 3D-printed wooden-look clogs, rendered in MuJoCo
+    caption: "The clogs on the K1, in MuJoCo. Photo of the printed pair to come."
+  - src: /media/k1-klompen/vine-upper.jpg
+    alt: The K1's feet in light open-work shoes made of carved vines, render
+    caption: "The light vine pair, render. Photo to come."
+  - src: /media/k1-klompen/side.jpg
+    alt: Side view of the K1's foot in a clog standing on the floor, MuJoCo
+    caption: A clog from the side.
+  - src: /media/k1-klompen/pair.jpg
+    alt: CAD render of the pair of clogs with carved rosettes and mounting holes in the footbed
+    caption: The clogs, CAD render.
+  - src: /media/k1-klompen/dance.mp4
+    poster: /media/k1-klompen/dance.jpg
+    alt: Two simulated K1 robots doing the same dance, barefoot on the left and in clogs on the right
+    caption: The same dance policy barefoot (left) and in the clogs (right).
+    wide: true
+featured: true
+order: 4
+---
+
+## Summary
+
+Shoes I designed and 3D printed for the Booster K1, in two open-source sets, each in its own
+repo:
+
+- **Heels** for runway walks. The 50 mm pair is printed and on the robot.
+  [Files](https://github.com/Kyk0/k1-heel-shoes).
+- **Clogs and vines** for the
+  [Humanoid Robot Fashion Challenge](/blog/robot-fashion-challenge/) at Kent State, where our
+  team won Best Humanoid Wearable/Accessory. [Files](https://github.com/Kyk0/k1-klompen).
+
+## Heels
+
+I also have 20, 30 and 40 mm versions of the same shoe, not printed yet.
+
+| | |
+| --- | --- |
+| Heel | 50 mm |
+| Sole pitch | ~15.6° toe down |
+| Sole below the bare foot | 58.5 mm |
+| Weight | ~350 g per shoe |
+| Mounting | three screws through the posts in the footbed |
+
+The [files](https://github.com/Kyk0/k1-heel-shoes) have STEP and STL for both shoes, sim
+meshes, and MuJoCo / URDF models of the K1 wearing them. Walking in them:
+[K1 Heel Walking](/projects/k1-heel-walking/).
+
+## Clogs and vines
+
+For the challenge I designed 12 types of shoes for the K1. Two were printed for the show, and
+both are here: solid Dutch clogs and a light open-work pair with vines. Each prints in one
+piece and fits over the K1's foot.
+
+| | |
+| --- | --- |
+| Size | 229 × 108 × 67 mm |
+| Weight | ~350 g per shoe (estimate) |
+| Robot height | +2.2 cm |
+
+A dance policy trained barefoot also runs in the clogs in simulation without falling: body
+tracking error 4.94 cm, against 4.86 cm barefoot.
+
+The [files](https://github.com/Kyk0/k1-klompen) have the print STLs, the script that builds
+the clogs, an ornate version with a heel rosette, side tulips and a rope border, three vine
+versions (open-work, relief, full), and the K1 wearing them in MuJoCo and as a URDF.

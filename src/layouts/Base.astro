@@ -1,0 +1,151 @@
+---
+import '@fontsource/ibm-plex-sans/400.css';
+import '@fontsource/ibm-plex-sans/400-italic.css';
+import '@fontsource/ibm-plex-sans/500.css';
+import '@fontsource/ibm-plex-sans/600.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '../styles/site.css';
+import { getEntry } from 'astro:content';
+import Media from '../components/Media.astro';
+import Viewer from '../components/Viewer.astro';
+import { SITE, getPosts } from '../lib/util';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  jsonld?: object | object[]; // schema.org structured data for this page
+}
+const { title, description = SITE.description, image = '/og.png', type = 'website', jsonld } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE.name}` : SITE.name;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+const path = Astro.url.pathname;
+const bio = (await getEntry('meta', 'bio'))!.data;
+const rev = bio.updated; // REV in the sidebar: bump `updated:` in bio.md when you edit the site
+// Breadcrumbs from the URL: kyry.me / projects / expressive-motion
+const parts = path.split('/').filter(Boolean);
+const crumbHref = (i: number) => '/' + parts.slice(0, i + 1).join('/') + '/';
+const crumbs = parts.map((p, i) => ({ label: p, href: crumbHref(i) }));
+const nav = [
+  ['/', 'home'],
+  ['/projects/', 'projects'],
+  ['/publications/', 'publications'],
+  ...((await getPosts()).length ? [['/blog/', 'blog']] : []), // only once there is a post
+  ['/cv/', 'cv'],
+];
+const current = (href: string) => (href === '/' ? path === '/' : path.startsWith(href.replace(/\/$/, '')));
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.name} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f4f4f1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1112" media="(prefers-color-scheme: dark)" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.name}: projects, papers and posts`} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="text/plain" title="Plain-text summary for LLMs" href="/llms.txt" />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={title ?? SITE.name} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content={SITE.x} />
+    {jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="sidebar-inner">
+          <p class="stamp"><span><b>ID</b> KK-01</span>{rev && <span>REV {rev}</span>}</p>
+          <a href="/" class="id">
+            {bio.portrait && <span class="portrait"><Media src={bio.portrait.src} alt={bio.portrait.alt} thumb /></span>}
+            <span class="id-text">
+              <span class="name">{SITE.name}</span>
+              {bio.role && <span class="role">{bio.role}</span>}
+            </span>
+          </a>
+          <dl class="fields">
+            {bio.affiliations?.map((a, i) => (
+              <>
+                <dt>affil.{i + 1}</dt>
+                <dd>{a.label}</dd>
+              </>
+            ))}
+            <dt>contact</dt>
+            <dd>
+              <ul class="contact">
+                {bio.links?.filter((l) => l.url || import.meta.env.DEV).map((l) => (
+                  <li>{l.url ? <a href={l.url}>{l.label}</a> : <span class="todo">{l.label}</span>}</li>
+                ))}
+              </ul>
+            </dd>
+          </dl>
+          <nav class="nav" aria-label="Main">
+            {nav.map(([href, label], i) => (
+              <a href={href} aria-current={current(href) ? 'page' : undefined}><span class="nav-no">{String(i).padStart(2, '0')}</span>{label}</a>
+            ))}
+          </nav>
+          <p class="sidebar-foot meta">
+            <a href="/rss.xml">rss</a>
+          </p>
+        </div>
+      </aside>
+      <main id="main">
+        <p class="crumbs" aria-label="Breadcrumb">
+          <a href="/">kyry.me</a>
+          {crumbs.map((c, i) => (
+            <>
+              <span class="sep">/</span>
+              {i === crumbs.length - 1 ? <span aria-current="page">{c.label}</span> : <a href={c.href}>{c.label}</a>}
+            </>
+          ))}
+        </p>
+        <slot />
+      </main>
+    </div>
+    <Viewer />
+    <script>
+      // Copy buttons (citation, BibTeX). Hidden without JS; the text is still selectable.
+      for (const btn of document.querySelectorAll<HTMLButtonElement>('button.copy[data-copy]')) {
+        btn.hidden = false;
+        const label = btn.textContent;
+        btn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(btn.dataset.copy ?? '');
+            btn.textContent = 'copied';
+          } catch {
+            btn.textContent = 'copy failed, select the text';
+          }
+          setTimeout(() => (btn.textContent = label), 1500);
+        });
+      }
+      // Respect reduced motion: stop looping videos and give the reader controls instead.
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        for (const v of document.querySelectorAll<HTMLVideoElement>('video[data-autoplay]')) {
+          v.removeAttribute('autoplay');
+          v.pause();
+          if (!v.classList.contains('thumb')) v.controls = true;
+        }
+      }
+    </script>
+    {import.meta.env.PROD && SITE.cfAnalyticsToken && (
+      <script is:inline type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: SITE.cfAnalyticsToken })}></script>
+    )}
+  </body>
+</html>

@@ -1,0 +1,20 @@
+---
+// Usable inside .mdx content without importing:
+// <Figure src="/media/x.mp4" alt="..." caption="..." />
+// Click opens the viewer.
+import Media from './Media.astro';
+import ViewLink from './ViewLink.astro';
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  poster?: string;
+}
+const { src, alt, caption, poster } = Astro.props;
+---
+<figure>
+  <ViewLink src={src} alt={alt} caption={caption} poster={poster} class="figure-link">
+    <Media src={src} alt={alt} poster={poster} />
+  </ViewLink>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

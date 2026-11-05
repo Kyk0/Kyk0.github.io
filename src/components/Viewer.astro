@@ -1,0 +1,89 @@
+---
+// Full-screen viewer for photos and videos marked with data-viewer (ViewLink.astro).
+// Arrows or swipe move through every viewable item on the page; Esc closes.
+---
+<dialog class="viewer" aria-label="Media viewer">
+  <div class="viewer-bar">
+    <span class="viewer-count"></span>
+    <button type="button" class="viewer-close">close <kbd>esc</kbd></button>
+  </div>
+  <div class="viewer-stage"></div>
+  <div class="viewer-foot">
+    <button type="button" class="viewer-prev" aria-label="Previous">←</button>
+    <p class="viewer-cap"></p>
+    <button type="button" class="viewer-next" aria-label="Next">→</button>
+  </div>
+</dialog>
+
+<script>
+  const dlg = document.querySelector<HTMLDialogElement>('dialog.viewer');
+  if (dlg && typeof dlg.showModal === 'function') {
+    const stage = dlg.querySelector<HTMLElement>('.viewer-stage')!;
+    const cap = dlg.querySelector<HTMLElement>('.viewer-cap')!;
+    const count = dlg.querySelector<HTMLElement>('.viewer-count')!;
+    const prev = dlg.querySelector<HTMLButtonElement>('.viewer-prev')!;
+    const next = dlg.querySelector<HTMLButtonElement>('.viewer-next')!;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    let items: HTMLAnchorElement[] = [];
+    let i = 0;
+
+    const show = (n: number) => {
+      i = (n + items.length) % items.length;
+      const a = items[i];
+      let el: HTMLElement;
+      if (a.dataset.type === 'video') {
+        const v = document.createElement('video');
+        v.src = a.href;
+        v.controls = true;
+        v.loop = true;
+        v.muted = true;
+        v.playsInline = true;
+        v.autoplay = !reduce;
+        if (a.dataset.poster) v.poster = a.dataset.poster;
+        v.setAttribute('aria-label', a.dataset.alt ?? '');
+        el = v;
+      } else {
+        const img = new Image();
+        img.src = a.href;
+        img.alt = a.dataset.alt ?? '';
+        el = img;
+      }
+      stage.replaceChildren(el);
+      cap.textContent = a.dataset.caption || a.dataset.alt || '';
+      count.textContent = `${pad(i + 1)} / ${pad(items.length)}`;
+      prev.hidden = next.hidden = items.length < 2;
+    };
+
+    document.addEventListener('click', (e) => {
+      const a = (e.target as Element).closest<HTMLAnchorElement>('a[data-viewer]');
+      if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      items = [...document.querySelectorAll<HTMLAnchorElement>('a[data-viewer]')];
+      show(items.indexOf(a));
+      dlg.showModal();
+    });
+    prev.addEventListener('click', () => show(i - 1));
+    next.addEventListener('click', () => show(i + 1));
+    dlg.querySelector('.viewer-close')!.addEventListener('click', () => dlg.close());
+    dlg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(i - 1);
+      if (e.key === 'ArrowRight') show(i + 1);
+    });
+    // Click on the dark area around the media closes.
+    dlg.addEventListener('click', (e) => {
+      if (e.target === dlg || e.target === stage) dlg.close();
+    });
+    // Swipe on phones.
+    let x0: number | null = null;
+    dlg.addEventListener('touchstart', (e) => (x0 = e.touches[0].clientX), { passive: true });
+    dlg.addEventListener('touchend', (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50 && items.length > 1) show(dx < 0 ? i + 1 : i - 1);
+      x0 = null;
+    });
+    // Stop the video when closing.
+    dlg.addEventListener('close', () => stage.replaceChildren());
+  }
+</script>

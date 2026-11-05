@@ -1,0 +1,28 @@
+---
+// Wraps a photo or video so it opens in the viewer (see Viewer.astro). Without JS it is a
+// plain link to the file. A missing file (placeholder) gets no link.
+import { isVideo, mediaExists } from '../lib/media';
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  poster?: string;
+  class?: string;
+}
+const { src, alt, caption, poster, class: cls } = Astro.props;
+const video = isVideo(src);
+---
+{mediaExists(src) ? (
+  <a
+    href={src}
+    class={cls}
+    data-viewer
+    data-type={video ? 'video' : 'image'}
+    data-alt={alt}
+    data-caption={caption}
+    data-poster={poster}
+    aria-label={`Open ${video ? 'video' : 'photo'}: ${alt}`}
+  ><slot /></a>
+) : (
+  <div class={cls}><slot /></div>
+)}

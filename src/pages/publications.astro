@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import Pub from '../components/Pub.astro';
+import UnderReview from '../components/UnderReview.astro';
+import { getPapers } from '../lib/util';
+// Papers live in their project files; this page collects them.
+const papers = await getPapers();
+const years = [...new Set(papers.map((x) => x.paper.year))];
+---
+<Base title="Publications" description="Publications by Kyrylo Kolesnichenko, with BibTeX.">
+  <h1>Publications</h1>
+  <p class="lede">Each paper links to its project page with videos and photos. Papers under review are at the bottom.</p>
+  {years.map((y) => (
+    <section>
+      <h2 class="year" id={`y${y}`}>{y}</h2>
+      <ul class="pubs">
+        {papers.filter((x) => x.paper.year === y).map((x) => <Pub {...x} n={papers.length - papers.indexOf(x)} />)}
+      </ul>
+    </section>
+  ))}
+  <section>
+    <h2 class="year" id="under-review">Under review</h2>
+    <ul class="pubs">
+      <UnderReview n={papers.length + 1} />
+    </ul>
+  </section>
+</Base>

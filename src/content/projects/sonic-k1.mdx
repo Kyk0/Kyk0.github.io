@@ -1,0 +1,98 @@
+---
+title: SONIC-K1
+summary: NVIDIA's SONIC whole-body motion tracker, ported to the Booster K1, trained from scratch with about 1% of the original compute and post-trained for the real robot. The first open-weights motion tracker for the K1.
+start: "2026-10"
+robots: [Booster K1]
+status: released, preprint
+role: "TODO: confirm. Everything: port, retargeting, training, evaluation, release."
+stack: [Python, PyTorch, Isaac Lab, MuJoCo, PPO, ONNX, NVIDIA SONIC]
+links:
+  - { label: project page, url: "https://kyry.me/sonic-k1/" }
+  - { label: arXiv, url: "https://arxiv.org/abs/2610.39327" }
+  - { label: code, url: "https://github.com/Kyk0/sonic-k1" }
+  - { label: weights, url: "https://huggingface.co/Kyry10/sonic-k1" }
+  - { label: K1 USD, url: "https://huggingface.co/datasets/Kyry10/booster-k1-usd" }
+  - { label: release post, url: /blog/sonic-k1-release/ }
+  - { label: K1 Moves, url: "https://huggingface.co/datasets/Kyry10/k1-moves" }
+media:
+  src: /media/sonic-k1/hero_web.mp4
+  poster: /media/sonic-k1/hero_web.jpg
+  alt: Human motion capture on the left and the Booster K1 policy following it on the right, on motions it never saw in training
+  caption: "Human motion capture (left) and the K1 policy (right), on motions it never saw in training. MuJoCo."
+gallery:
+  - src: /media/sonic-k1/grid_3x3.mp4
+    poster: /media/sonic-k1/grid_3x3.jpg
+    alt: Nine simulated K1 robots, each following a different unseen motion
+    caption: One policy, nine unseen motions.
+    wide: true
+  - src: /media/sonic-k1/mujoco_sim2sim.mp4
+    poster: /media/sonic-k1/mujoco_sim2sim.jpg
+    alt: Human motion, the retargeted K1 reference and the policy side by side in MuJoCo
+    caption: "Human motion, the retargeted K1 reference, and the policy in MuJoCo."
+    wide: true
+papers:
+  - title: "SONIC-K1: Porting a Universal Humanoid Motion Tracker to a Small Humanoid on a Single GPU"
+    authors: [Kyrylo Kolesnichenko, Irvin Steve Cardenas, Jong-Hoon Kim]
+    year: 2026
+    date: "2026-10-29"
+    venue: arXiv preprint
+    status: preprint
+    type: misc
+    arxiv: "2610.39327"
+    code: https://github.com/Kyk0/sonic-k1
+    selected: true
+    bibtex: |
+      @misc{kolesnichenko2026sonick1,
+        title         = {{SONIC-K1}: Porting a Universal Humanoid Motion Tracker to a Small Humanoid on a Single {GPU}},
+        author        = {Kolesnichenko, Kyrylo and Cardenas, Irvin Steve and Kim, Jong-Hoon},
+        year          = {2026},
+        eprint        = {2610.39327},
+        archivePrefix = {arXiv},
+        primaryClass  = {cs.RO}
+      }
+featured: true
+pinned: true
+order: 11
+---
+
+## Summary
+
+[SONIC](https://arxiv.org/abs/2511.07820) is NVIDIA's whole-body motion tracker for the
+Unitree G1: one policy that follows thousands of human motions. SONIC-K1 ports it to the
+Booster K1 and trains it from scratch on about 10,000 Bones-SEED mocap clips retargeted to
+the K1, in about 100 GPU-hours on a shared H100, about 1% of SONIC's training compute. v1.0 adds
+a short post-training for the real robot (Booster's torque limits and 0-40 ms of actuation delay,
+4,000 more iterations). Code, weights, the robot app and the K1 USD are public; details in the
+[preprint](https://arxiv.org/abs/2610.39327).
+
+## Results (simulation)
+
+Success on motions the policy never trained on, with the SONIC paper's own success rule, in
+MuJoCo:
+
+| benchmark | SONIC-K1 (K1) | SONIC (G1)* | BeyondMimic (G1)* | Any2Track (G1)* |
+|---|---|---|---|---|
+| PHUMA, external benchmark | 92.3% | 97.2% | 73.8% | 78.5% |
+| held-out mocap (ours: 1,985 Bones-SEED clips) | 97.4% | 98.5% | 82.0% | 61.6% |
+| held-out, real-robot torque limits + 40 ms delay | 96.6% (v0.1: 76.7%) | | | |
+
+\* As reported in the SONIC paper, on the Unitree G1 with their own data and retargeting: an
+indicative comparison, not a controlled one.
+
+## How
+
+- SONIC's training code, adapted to the K1's 22 joints, with motions retargeted from human
+  mocap to the K1 with [UMR](https://github.com/hanyang9/UMR).
+- Trained headless in Isaac Lab on a shared H100, following my
+  [Isaac Lab on H100 guide](https://kyry.me/isaaclab-h100/).
+- Exported to ONNX: the policy runs on a laptop in MuJoCo, no GPU and no Isaac needed
+  (quick start on the [project page](https://kyry.me/sonic-k1/)).
+
+v1.0 runs on the real K1 with the open [robot app](https://github.com/Kyk0/sonic-k1/tree/main/sonic_k1_deploy);
+in our runs it walks and turns without the leg shaking of the first release (see the preprint).
+Next: hardware evaluation, whole-body teleoperation from a VR headset, and video to K1. Demo motions for it: [K1 Moves](https://huggingface.co/datasets/Kyry10/k1-moves).
+
+Training data includes Motion Data by [Bones Studio](https://bones.studio/); use of the
+underlying dataset is subject to the BONES Motion Capture Dataset License Agreement. Weights
+are released for non-commercial research (CC BY-NC 4.0). Built on SONIC by NVIDIA GEAR (code
+Apache-2.0); robot model by Booster Robotics (BSD-3).

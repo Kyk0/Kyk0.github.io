@@ -1,0 +1,50 @@
+---
+title: K1 Loco-Teleop
+summary: A walking policy for the Booster K1 that drives only the legs, so the arms and head stay free for teleoperation.
+start: "2026-10"
+end: present
+robots: [Booster K1]
+status: in progress, simulation
+role: "TODO: confirm. Task, arm-motion generator, training and evaluation."
+stack: [Python, PyTorch, mjlab, MuJoCo, PPO, AMP, booster_deploy]
+links:
+  - { label: code, url: "https://github.com/Kyk0/booster_mjlab/blob/k1-teleop-and-heels/docs/loco_teleop.md" }
+  - { label: heel walking, url: "/projects/k1-heel-walking/" }
+media:
+  src: /media/k1-loco-teleop/teleop-arms.mp4
+  poster: /media/k1-loco-teleop/teleop-arms.jpg
+  alt: Two simulated K1 robots walking while their arms move randomly
+  caption: "Arms moving over their full range: a policy trained with the arms still (left) and one trained with random arm motion (right)."
+featured: true
+order: 6
+---
+
+## Summary
+
+The policy outputs only the 12 leg joints from a velocity command. The head and arms
+(10 joints) are driven from outside, by the teleoperator. To make the legs keep balance
+whatever the arms do, the arms are moved during training by a random motion generator
+over their whole range.
+
+## How
+
+- Every 1–4 s each simulated robot picks a new arm motion: circles, sweeps, or jumps to a
+  random pose. Frequency 0.2–1.5 Hz, amplitude 30–100% of half the joint range, ramped up
+  over the first 1000 iterations. No motion dataset: the parameters are random.
+- AMP keeps the walking style (legs-only discriminator, LAFAN walking clips, style weight 0.5).
+- mjlab, PPO with the Muon optimizer, 4096 environments, 4000 iterations.
+
+## Results (simulation)
+
+512 robots walking for 40 s while the arms move in circles over their full range:
+
+| trained with | robots that fell |
+|---|---|
+| arms held still | 100% |
+| arms at random poses near the default | 25% |
+| the arm-motion generator | 0.7–2.5% |
+
+In the booster_deploy MuJoCo check with the arms raised, the arm-motion policy keeps the
+trunk within 1–2° of upright; the random-pose one leans 16–18°.
+
+The same policy in heel shoes: [K1 Heel Walking](/projects/k1-heel-walking/).

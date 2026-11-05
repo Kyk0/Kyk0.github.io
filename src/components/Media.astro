@@ -1,0 +1,47 @@
+---
+// Renders a video or image from /public. If the file is not there yet, renders a
+// clearly marked placeholder that names the path to drop the file into.
+import { isVideo as isVideoSrc, mediaExists } from '../lib/media';
+
+interface Props {
+  src: string;
+  alt: string;
+  poster?: string;
+  thumb?: boolean;
+  position?: string; // CSS object-position for cropped views
+  fit?: 'cover' | 'contain'; // contain: whole picture, own proportions
+}
+const { src, alt, poster, thumb = false, position, fit } = Astro.props;
+const style = position ? `object-position: ${position}` : undefined;
+const exists = mediaExists(src);
+const isVideo = isVideoSrc(src);
+---
+{
+  !exists ? (
+    <div class:list={['placeholder', { thumb }]} role="img" aria-label={`Placeholder: ${alt}`}>
+      {thumb ? <span>media</span> : (
+        <span>
+          PLACEHOLDER. Add <code>public{src}</code>
+          <br />
+          {alt}
+        </span>
+      )}
+    </div>
+  ) : isVideo ? (
+    <video
+      class:list={['media', { thumb, 'fit-contain': fit === 'contain' }]}
+      style={style}
+      src={src}
+      poster={poster}
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      aria-label={alt}
+      data-autoplay
+    />
+  ) : (
+    <img class:list={['media', { thumb, 'fit-contain': fit === 'contain' }]} style={style} src={src} alt={alt} loading="lazy" decoding="async" />
+  )
+}

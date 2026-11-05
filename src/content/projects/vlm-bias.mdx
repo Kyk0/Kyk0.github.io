@@ -1,0 +1,68 @@
+---
+title: Structured prompting and knowledge bias in VLMs
+summary: Can structured prompting overcome knowledge bias in vision-language models? Four open-source VLMs, five prompting strategies, the VLMBias benchmark.
+start: "2026"
+end: "2026-05"
+venue: IVUS 2026
+status: presented, to appear
+role: First author.
+stack: [Python, vLLM, Hugging Face, pandas, SciPy, VLMs]
+links:
+  - { label: code, url: "https://github.com/Kyk0/structured-prompting-vlm-bias" }
+media:
+  src: /media/vlm-bias/bias-error.png
+  alt: Bar chart of bias-aligned error rate for four models under five prompting strategies
+  caption: Bias-aligned error rate for each model and prompt. Lower is better.
+  fit: contain
+papers:
+  - title: Can Structured Prompting Overcome Knowledge Bias in Vision-Language Models?
+    authors: [Kyrylo Kolesnichenko, Martas Ambraziunas]
+    year: 2026
+    date: "2026-05-12"
+    venue: Proceedings of the 31st International Conference on Information Society and University Studies (IVUS 2026), CEUR Workshop Proceedings
+    status: presented, to appear
+    bibtex: |
+      @inproceedings{kolesnichenko2026structured,
+        title     = {{Can Structured Prompting Overcome Knowledge Bias in Vision-Language Models?}},
+        author    = {Kolesnichenko, Kyrylo and Ambraziunas, Martas},
+        booktitle = {Proceedings of the 31st International Conference on Information Society and University Studies (IVUS 2026)},
+        address   = {Kaunas, Lithuania},
+        series    = {CEUR Workshop Proceedings},
+        year      = {2026},
+        note      = {To appear}
+      }
+    code: https://github.com/Kyk0/structured-prompting-vlm-bias
+    selected: true
+    todo: CEUR volume and PDF link once published
+order: 9
+---
+
+## Summary
+
+Vision-language models often answer from what they remember instead of looking at the
+image. Show one an Adidas logo with four stripes and it may still say three. Vo et al.
+showed this on closed API models with the VLMBias benchmark. I asked two things: does
+the same bias show up in smaller open-source models, and can more structured prompting
+fix it?
+
+## Setup
+
+| | |
+| --- | --- |
+| Models | Qwen3-VL-8B, InternVL3-8B, Gemma 3-12B, GLM-4.1V-9B-Thinking |
+| Benchmark | VLMBias, 2784 counterintuitive images in 7 domains |
+| Prompting | baseline, debiased, zero-shot chain-of-thought, compositional chain-of-thought, double-check |
+| Statistics | McNemar test with Bonferroni correction |
+
+<Figure src="/media/vlm-bias/prompts.png" alt="The five prompt templates: baseline, debiased, zero-shot CoT, compositional CoT and double-check" caption="The five prompts. {question} is the original VLMBias counting question." />
+
+## Results
+
+- The open-source models behave like the API ones: 17–22% accuracy and a 65–85%
+  bias-aligned error rate.
+- Of 16 comparisons against the baseline prompt, 6 stay significant after Bonferroni
+  correction.
+- The effects depend on the model. Chain-of-thought cut InternVL3's bias errors from
+  75% to 65% but made Gemma 3 worse. No prompt helped all four.
+
+Prompting alone is not enough to reliably reduce knowledge bias in VLMs.

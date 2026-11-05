@@ -1,0 +1,73 @@
+---
+title: Microduck Arena Lab
+summary: "Faster running gaits for Pollen Robotics' Microduck on three simulated race courses, fine-tuned with PPO and chosen by the Arena's five-seed score. #1 on the roller sprint leaderboard."
+start: "2026-10"
+robots: [Microduck]
+status: simulation
+role: "TODO: confirm. Everything: training, evaluation, videos."
+stack: [Python, PyTorch, mjlab, MuJoCo, PPO, rsl_rl, ONNX]
+links:
+  - { label: code and weights, url: "https://huggingface.co/Kyry10/microduck-arena-lab" }
+  - { label: arena, url: "https://huggingface.co/spaces/pollen-robotics/microduck-arena" }
+media:
+  src: /media/microduck-arena-lab/roller-glide.mp4
+  poster: /media/microduck-arena-lab/roller-glide.jpg
+  alt: The small bipedal Microduck running over passive rollers in MuJoCo, with the race clock
+  caption: "Roller sprint, seed 3: 1.44 s, then a half-speed replay. Five-seed mean 1.516 s."
+gallery:
+  - src: /media/microduck-arena-lab/sprint-launchboost.mp4
+    poster: /media/microduck-arena-lab/sprint-launchboost.jpg
+    alt: Microduck running the flat 2 m sprint lane
+    caption: "2 m sprint, seed 5: 1.08 s. Mean 1.084 s."
+  - src: /media/microduck-arena-lab/hill-slope-runner.mp4
+    poster: /media/microduck-arena-lab/hill-slope-runner.jpg
+    alt: Microduck running up the 8 degree slope
+    caption: "8° hill, seed 3: 1.34 s. Mean 1.360 s."
+  - src: /media/microduck-arena-lab/results.jpg
+    alt: Bar charts of the five-seed score of each selected checkpoint on the three courses
+    caption: Five-seed Arena score of the selected checkpoints, lower is better.
+    wide: true
+    fit: contain
+  - src: /media/microduck-arena-lab/microduck-project-film.mp4
+    poster: /media/microduck-arena-lab/microduck-project-film.jpg
+    alt: The project film, all three courses one after another
+    caption: All three courses, 25 s.
+    wide: true
+order: 13
+---
+
+## Summary
+
+[Microduck Arena](https://huggingface.co/spaces/pollen-robotics/microduck-arena) is Pollen
+Robotics' leaderboard for their small bipedal robot: a 2 m sprint, a 1.5 m climb up an 8°
+slope and a 2 m sprint over passive rollers, each scored as the mean finish time over five
+seeds. I started from a licensed running policy (Hannes von Essen's
+[microduck-running](https://huggingface.co/HannesVonEssen/microduck-running), Apache-2.0)
+and fine-tuned it for each course with PPO.
+
+| course | best mean (5/5 finishes) | published entry |
+|---|---|---|
+| 2 m sprint | 1.084 s | 1.096 s |
+| 8° hill | 1.360 s | 1.360 s |
+| passive rollers | 1.516 s | 1.648 s, #1 on the leaderboard |
+
+Simulation only (MuJoCo). The 1.516 s roller policy is newer than the published entry and
+was not yet submitted.
+
+## How
+
+- Kept the policy interface fixed (61 observations, 14 actions, the original normalizer), so
+  every checkpoint can be scored by the Arena as is.
+- Trained on the race itself: the real lane, slope or rollers, start from standing, narrow
+  start and actuator-delay noise; reward for forward progress, finish bonus, fall penalty.
+- Every 100 training iterations the checkpoint was exported to ONNX and scored by the Arena
+  on five seeds. Only policies that finish all five count; the training reward was never
+  used to pick one.
+- One change per experiment. A lower learning rate on a full PPO resume took the roller gait
+  from 1.648 s to 1.516 s. On the sprint, static gait trims and longer runs did not beat the
+  selected policy. The fastest flat-ground policy, run as is, finished only 1 of 5 seeds on the
+  hill and none on the rollers: each course needed its own fine-tuning.
+
+Each experiment, including the ones that failed, is in the
+[repository on Hugging Face](https://huggingface.co/Kyry10/microduck-arena-lab/blob/main/docs/EXPERIMENTS.md),
+with the scripts, per-seed scores and the weights.

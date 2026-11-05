@@ -1,0 +1,78 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Frame from '../../components/Frame.astro';
+import Figure from '../../components/Figure.astro';
+import Gallery from '../../components/Gallery.astro';
+import { getPosts, isTodo, monthYear, prettyUrl } from '../../lib/util';
+import { showMedia } from '../../lib/media';
+
+export async function getStaticPaths() {
+  const posts = (await getPosts()).filter((p) => !p.data.url); // external posts have no page here
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+const { post, newer, older } = Astro.props;
+const p = post.data;
+const { Content } = await render(post);
+const gallery = p.gallery.filter((m) => showMedia(m.src));
+const image = p.media && !/\.(mp4|webm|mov)$/i.test(p.media.src) ? p.media.src : p.media?.poster;
+
+const site = Astro.site!.href;
+const abs = (u: string) => new URL(u, site).href;
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: p.title,
+  description: p.summary,
+  url: abs(Astro.url.pathname),
+  ...(!isTodo(p.date) && { datePublished: p.date }),
+  author: { '@type': 'Person', name: 'Kyrylo Kolesnichenko', url: site },
+  ...(image && { image: abs(image) }),
+};
+---
+<Base title={p.title} description={p.summary} type="article" image={image} jsonld={jsonld}>
+  <a class="back" href="/blog/">← blog</a>
+  <header class="page-head">
+    <p class="page-id">{p.kind}{p.draft && <span> · draft, not on the live site</span>}</p>
+    <h1>{p.title}</h1>
+    <p class="lede">{p.summary}</p>
+  </header>
+
+  {p.media && showMedia(p.media.src) && (
+    <Frame src={p.media.src} alt={p.media.alt} poster={p.media.poster} caption={p.media.caption} label={post.id} position={p.media.position} fit={p.media.fit} link={p.media.link} />
+  )}
+
+  <div class="with-facts">
+    <article class="prose">
+      <Content components={{ Figure }} />
+      {gallery.length > 0 && <Gallery items={gallery} />}
+    </article>
+
+    <aside class="facts-col" aria-label="Post facts">
+      <dl class="facts">
+        <dt>date</dt><dd>{isTodo(p.date) ? <span class="todo">{p.date}</span> : <time datetime={p.date}>{p.date.length > 7 ? p.date : monthYear(p.date)}</time>}</dd>
+        {p.where && <><dt>where</dt><dd>{isTodo(p.where) ? <span class="todo">{p.where}</span> : p.where}</dd></>}
+        {p.duration && <><dt>length</dt><dd>{isTodo(p.duration) ? <span class="todo">{p.duration}</span> : p.duration}</dd></>}
+        {p.audience && <><dt>for</dt><dd>{isTodo(p.audience) ? <span class="todo">{p.audience}</span> : p.audience}</dd></>}
+        {p.links.length > 0 && (
+          <>
+            <dt>links</dt>
+            <dd class="fact-links">
+              {p.links.map((l) => (
+                <a href={l.url}><span class="fact-link-label">{l.label}</span><span class="fact-link-url">{prettyUrl(l.url)}</span></a>
+              ))}
+            </dd>
+          </>
+        )}
+      </dl>
+    </aside>
+  </div>
+
+  <nav class="pager meta" aria-label="More posts">
+    {older ? <a href={`/blog/${older.id}/`}>← {older.data.title}</a> : <span></span>}
+    {newer && <a href={`/blog/${newer.id}/`}>{newer.data.title} →</a>}
+  </nav>
+</Base>

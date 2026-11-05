@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Media from './Media.astro';
+import { range, isTodo, hideTodo, projectId } from '../lib/util';
+import { showMedia } from '../lib/media';
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+const { project } = Astro.props;
+const p = project.data;
+const media = p.media && showMedia(p.media.src) ? p.media : undefined;
+const photos = [p.media, ...p.gallery].filter((m) => m && showMedia(m.src)).length;
+const dates = range(p.start, p.end);
+const counts = [
+  p.papers.length && `${p.papers.length} ${p.papers.length === 1 ? 'paper' : 'papers'}`,
+  photos && `${photos} media`,
+].filter(Boolean);
+const href = `/projects/${project.id}/`;
+---
+<li class="card">
+  {p.soon && !media ? (
+    <a href={href} class="card-media" tabindex="-1" aria-hidden="true"><div class="soon-box thumb"><span>photos coming soon</span></div></a>
+  ) : (media || import.meta.env.DEV) && (
+    <a href={href} class="card-media" tabindex="-1" aria-hidden="true">
+      {media ? <Media src={media.src} alt={media.alt} poster={media.poster} position={media.position} fit={media.fit} thumb /> : <div class="placeholder thumb"><span>media</span></div>}
+    </a>
+  )}
+  <div class="card-head">
+    <span class="card-id">{projectId(p.order)}</span>
+    <a href={href} class="card-title">{p.title}</a>
+    {!hideTodo(dates) && <span class:list={['meta', { todo: isTodo(dates) }]}>{dates}</span>}
+  </div>
+  <p class="card-summary">{p.summary}</p>
+  <p class="meta card-tags">{[...p.robots, p.venue, p.status].filter(Boolean).join(' · ')}</p>
+  {counts.length > 0 && <p class="meta card-latest">{counts.join(' · ')}</p>}
+</li>

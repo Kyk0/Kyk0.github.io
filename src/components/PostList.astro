@@ -1,0 +1,24 @@
+---
+// One row per post: date · title and summary · kind. Used on /blog/ and the home page.
+import { isTodo, monthYear, postHref, prettyUrl, type Post } from '../lib/util';
+
+interface Props {
+  posts: Post[];
+  summary?: boolean;
+}
+const { posts, summary = true } = Astro.props;
+---
+<ul class="posts">
+  {posts.map((p) => (
+    <li>
+      <span class="post-date meta">{isTodo(p.data.date) ? <span class="todo">{p.data.date}</span> : <time datetime={p.data.date}>{monthYear(p.data.date)}</time>}</span>
+      <span class="post-body">
+        <a href={postHref(p)}>{p.data.title}</a>
+        {p.data.url && <span class="post-ext meta">{prettyUrl(p.data.url).split('/')[0]} ↗</span>}
+        {p.data.draft && <span class="todo">draft</span>}
+        {summary && <span class="post-summary">{p.data.summary}</span>}
+      </span>
+      <span class="post-kind meta">{p.data.kind}</span>
+    </li>
+  ))}
+</ul>

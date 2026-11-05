@@ -1,0 +1,121 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Frame from '../../components/Frame.astro';
+import Figure from '../../components/Figure.astro';
+import Gallery from '../../components/Gallery.astro';
+import Pub from '../../components/Pub.astro';
+import { prettyUrl, range, isTodo, hideTodo, sortProjects, projectId } from '../../lib/util';
+import { showMedia } from '../../lib/media';
+
+export async function getStaticPaths() {
+  const projects = sortProjects(await getCollection('projects'));
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: { project, prev: projects[i - 1], next: projects[i + 1] },
+  }));
+}
+const { project, prev, next } = Astro.props;
+const p = project.data;
+const { Content } = await render(project);
+const dates = range(p.start, p.end);
+const gallery = p.gallery.filter((m) => showMedia(m.src));
+const image = p.media && !/\.(mp4|webm|mov)$/i.test(p.media.src) ? p.media.src : p.media?.poster;
+
+// Structured data: the project, and its papers as scholarly articles. With exactly one paper
+// the page also gets Google Scholar's citation_* tags.
+const site = Astro.site!.href;
+const abs = (u: string) => new URL(u, site).href;
+const articles = p.papers.map((x) => ({
+  '@type': 'ScholarlyArticle',
+  headline: x.title,
+  name: x.title,
+  author: x.authors.map((a) => ({ '@type': 'Person', name: a })),
+  datePublished: x.date ?? String(x.year),
+  isPartOf: { '@type': 'PublicationEvent', name: x.venue },
+  url: x.arxiv ? `https://arxiv.org/abs/${x.arxiv}` : abs(Astro.url.pathname),
+  ...(x.pdf && { encoding: { '@type': 'MediaObject', contentUrl: abs(x.pdf), encodingFormat: 'application/pdf' } }),
+}));
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: p.title,
+  description: p.summary,
+  url: abs(Astro.url.pathname),
+  author: { '@type': 'Person', name: 'Kyrylo Kolesnichenko', url: site },
+  ...(image && { image: abs(image) }),
+  ...(p.robots.length && { about: p.robots }),
+  ...(articles.length && { hasPart: articles }),
+};
+const scholar = p.papers.length === 1 ? p.papers[0] : undefined;
+---
+<Base title={p.title} description={p.summary} type="article" image={image} jsonld={jsonld}>
+  {scholar && (
+    <Fragment slot="head">
+      <meta name="citation_title" content={scholar.title} />
+      {scholar.authors.map((a) => <meta name="citation_author" content={a} />)}
+      <meta name="citation_publication_date" content={scholar.date ?? String(scholar.year)} />
+      <meta name={scholar.type === 'article' ? 'citation_journal_title' : 'citation_conference_title'} content={scholar.venue} />
+      {scholar.pdf && <meta name="citation_pdf_url" content={abs(scholar.pdf)} />}
+      {scholar.arxiv && <meta name="citation_arxiv_id" content={scholar.arxiv} />}
+    </Fragment>
+  )}
+  <a class="back" href="/projects/">← projects</a>
+  <header class="page-head">
+    <p class="page-id">{projectId(p.order)}{p.status && <span> · {p.status}</span>}</p>
+    <h1>{p.title}</h1>
+    <p class="lede">{p.summary}</p>
+  </header>
+
+  {p.soon && !p.media && <div class="soon-box soon-hero"><span>photos coming soon</span></div>}
+
+  {p.media && showMedia(p.media.src) && (
+    <Frame src={p.media.src} alt={p.media.alt} poster={p.media.poster} caption={p.media.caption} label={project.id} position={p.media.position} fit={p.media.fit} link={p.media.link} />
+  )}
+
+  <div class="with-facts">
+    <article class="prose">
+      <Content components={{ Figure }} />
+      {gallery.length > 0 && (
+        <section>
+          <h2 id="media">Media</h2>
+          <Gallery items={gallery} />
+        </section>
+      )}
+      {p.papers.length > 0 && (
+        <section>
+          <h2 id="papers">{p.papers.length === 1 ? 'Paper' : 'Papers'}</h2>
+          <ul class="pubs">
+            {p.papers.map((paper) => <Pub paper={paper} project={project} teaser={false} />)}
+          </ul>
+        </section>
+      )}
+    </article>
+
+    <aside class="facts-col" aria-label="Project facts">
+      <dl class="facts">
+        {!hideTodo(dates) && <><dt>dates</dt><dd>{isTodo(dates) ? <span class="todo">{dates}</span> : dates}</dd></>}
+        {p.robots.length > 0 && <><dt>robot</dt><dd>{p.robots.join(', ')}</dd></>}
+        {p.venue && <><dt>venue</dt><dd>{p.venue}</dd></>}
+        {p.status && <><dt>status</dt><dd>{p.status}</dd></>}
+        {!hideTodo(p.role) && <><dt>role</dt><dd>{isTodo(p.role) ? <span class="todo">{p.role}</span> : p.role}</dd></>}
+        {p.stack.length > 0 && <><dt>stack</dt><dd>{p.stack.join(', ')}</dd></>}
+        {p.links.length > 0 && (
+          <>
+            <dt>links</dt>
+            <dd class="fact-links">
+              {p.links.map((l) => (
+                <a href={l.url}><span class="fact-link-label">{l.label}</span><span class="fact-link-url">{prettyUrl(l.url)}</span></a>
+              ))}
+            </dd>
+          </>
+        )}
+      </dl>
+    </aside>
+  </div>
+
+  <nav class="pager meta" aria-label="More projects">
+    {prev ? <a href={`/projects/${prev.id}/`}>← {prev.data.title}</a> : <span></span>}
+    {next && <a href={`/projects/${next.id}/`}>{next.data.title} →</a>}
+  </nav>
+</Base>

@@ -1,0 +1,69 @@
+---
+title: Catwalk gait with AMP
+summary: A runway walk for the Booster K1 learned with adversarial motion priors.
+start: "2026"
+end: present
+robots: [Booster K1]
+status: in progress
+role: "TODO: confirm. Training setup, reference motions and policy training."
+stack: [Python, PyTorch, mjlab, MuJoCo, AMP, PPO, Kimodo, GMR]
+links: []
+media:
+  src: /media/catwalk-amp/amp-arms-front.mp4
+  poster: /media/catwalk-amp/amp-arms-front.jpg
+  alt: Simulated Booster K1 walking towards the camera with an AMP catwalk gait, arms swinging
+  caption: Arms in the discriminator, style weight 0.7. Simulation, 0.5 m/s forward.
+gallery:
+  - src: /media/catwalk-amp/amp-arms-side.mp4
+    poster: /media/catwalk-amp/amp-arms-side.jpg
+    alt: The same AMP catwalk policy on the simulated K1, seen from the side
+    caption: The same policy from the side.
+  - src: /media/catwalk-amp/amp-legs-front.mp4
+    poster: /media/catwalk-amp/amp-legs-front.jpg
+    alt: Simulated K1 walking with an AMP policy whose discriminator sees only the legs
+    caption: "For comparison: discriminator on the legs only, style weight 0.5. The arms barely move."
+  - src: /media/catwalk-amp/reference-cw-short.mp4
+    poster: /media/catwalk-amp/reference-cw-short.jpg
+    alt: Kimodo-generated catwalk clip retargeted to the K1 model, no physics
+    caption: One of the two reference clips, generated with Kimodo and retargeted to the K1 (kinematic, no physics).
+order: 2
+---
+
+## Summary
+
+Motion tracking reproduces one clip. Adversarial motion priors instead learn a *style*:
+a discriminator scores how much the robot's motion looks like a set of reference clips,
+and that score is added to the velocity-tracking reward. Here the references are two
+runway walks retargeted to the K1, so the robot walks wherever it is commanded, in a
+catwalk style.
+
+## Method
+
+- Two 9.5 s catwalk clips generated from text with NVIDIA's [Kimodo](https://research.nvidia.com/labs/sil/projects/kimodo/)
+  motion diffusion model (for example: *"A female fashion model walks quickly forward with very
+  short, quick crossover steps and subtle hip sway…"*), then retargeted to the K1 with GMR.
+- Velocity task with AMP in mjlab (`booster_mjlab`), PPO with the Muon optimizer,
+  4096 environments.
+- The stock setup shows the discriminator only the legs. I added the shoulders and elbows
+  (46 features per frame instead of 30), and made the style weight, the upper-body posture
+  penalty and the discriminator width configurable.
+
+## Results
+
+With the discriminator on the legs only, the shoulders already swing with the gait, but
+the elbows stay almost frozen: about 15–18% of the reference elbow swing. Adding the arms to
+the discriminator, relaxing the upper-body posture penalty from −0.1 to −0.01 and raising
+the style weight to 0.7 brings the elbow swing to **0.91–1.10 of the reference**, with the
+left–right arm phase correlation at +0.70 (reference +0.71). The −0.01 weight is the one
+that matches the arm motion measured on the reference clips; with no penalty at all, the
+arms swing wider but drift out of phase. The cost is about 20% worse velocity tracking.
+
+I re-ran 12 trained catwalk policies under the same command (0.5 m/s forward, 12 s);
+none of them fell.
+
+## Next
+
+- Full-body AMP: put the waist and head in the discriminator too.
+- More turning in place in the data and the commands, so the policy learns turns better.
+- Runway poses at the end of the walk.
+- Hardware tests.

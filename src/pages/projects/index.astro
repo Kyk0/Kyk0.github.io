@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { sortProjects } from '../../lib/util';
+const projects = sortProjects(await getCollection('projects'));
+const isOther = (p: (typeof projects)[number]) => p.data.other || p.data.robots.length === 0;
+const humanoid = projects.filter((p) => !p.data.soon && !isOther(p));
+const other = projects.filter((p) => !p.data.soon && isOther(p));
+const soon = projects.filter((p) => p.data.soon);
+---
+<Base title="Projects" description="Humanoid robotics projects by Kyrylo Kolesnichenko.">
+  <header class="page-head">
+    <h1>Projects</h1>
+    <p class="lede">Learned locomotion on the Booster K1, Unitree G1 and Microduck: gaits from video, adversarial motion priors, whole-body control and footwear. Also social HRI on Pepper and a study of vision-language models. Each project page has its papers and media.</p>
+  </header>
+  <ul class="cards">
+    {humanoid.map((p) => <ProjectCard project={p} />)}
+  </ul>
+  {other.length > 0 && (
+    <section>
+      <h2 class="sec" id="other">Other research</h2>
+      <ul class="cards">
+        {other.map((p) => <ProjectCard project={p} />)}
+      </ul>
+    </section>
+  )}
+  {soon.length > 0 && (
+    <section>
+      <h2 class="sec" id="soon">Coming soon</h2>
+      <ul class="cards">
+        {soon.map((p) => <ProjectCard project={p} />)}
+      </ul>
+    </section>
+  )}
+</Base>

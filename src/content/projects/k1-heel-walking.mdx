@@ -1,0 +1,59 @@
+---
+title: K1 Heel Walking
+summary: Getting the K1 walking policies to walk in the 50 mm heels. Sim for now.
+start: "2026-10"
+end: present
+robots: [Booster K1]
+status: simulation; robot tests next
+role: Put the shoes in sim, fine-tuned the policies, tested them in MuJoCo.
+stack: [Python, PyTorch, mjlab, MuJoCo, PPO, AMP, booster_deploy]
+links:
+  - { label: code, url: "https://github.com/Kyk0/booster_mjlab/blob/k1-teleop-and-heels/docs/heels.md" }
+  - { label: shoes, url: "/projects/k1-shoes/" }
+media:
+  src: /media/k1-heel-walking/fullbody-shoes.mp4
+  poster: /media/k1-heel-walking/fullbody-shoes.jpg
+  alt: Two simulated K1 robots walking in heel shoes side by side
+  caption: Normal walking policy in the heels, before and after fine-tuning.
+gallery:
+  - src: /media/k1-heel-walking/teleop-shoes.mp4
+    poster: /media/k1-heel-walking/teleop-shoes.jpg
+    alt: Two simulated K1 robots walking in heel shoes while their arms move randomly
+    caption: The loco-teleop policy in the heels, with the arms moving randomly.
+  - src: /media/k1-heel-walking/bare-vs-heels.mp4
+    poster: /media/k1-heel-walking/bare-vs-heels.jpg
+    alt: Simulated K1 walking with normal feet and in heels side by side
+    caption: Normal feet and heels.
+  - src: /media/k1-heel-walking/falls-chart.png
+    alt: "Charts: falls and velocity error before and after fine-tuning in the shoes, for three arm-motion levels"
+    caption: "Loco-teleop policy in the heels, 512 envs × 40 s, before and after fine-tuning."
+  - src: /media/k1-heel-walking/sim-shoes.png
+    alt: MuJoCo render of the K1 standing in the heel shoes
+    caption: The shoes in MuJoCo.
+order: 5
+---
+
+## Summary
+
+The K1 walking policies are trained barefoot, and in the [50 mm heels](/projects/k1-shoes/)
+they get shaky. The sole is tilted and lower, and every foot is 350 g heavier. I put the
+shoes into the sim and fine-tuned two policies in them: the normal walk and the
+loco-teleop one, where the legs walk and the arms are free.
+
+## How
+
+- The shoe mesh is the foot collision now, and its weight goes into the foot.
+- The reference motions get +15.6° on the ankles and +58.5 mm on the root, so the shoe sole is flat where the bare foot was.
+- Warm start from the barefoot checkpoints. A few hundred iterations are enough, from scratch it takes ~4000.
+- On deploy the start pose gets the same ankle offset, otherwise the robot starts tipped forward.
+
+## Results
+
+All in sim so far.
+
+| | barefoot policy | fine-tuned in heels |
+| --- | --- | --- |
+| Loco-teleop, arms moving, envs that fell | 28% | 3.9% |
+| Loco-teleop, velocity error | 0.45 | 0.31 |
+| Normal walk, standing in MuJoCo | drifts 1.4 m | stands still |
+| Normal walk, 0.5 / 1.0 m/s command | | 0.50 / 0.95 m/s |
