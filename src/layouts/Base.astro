@@ -20,7 +20,7 @@ interface Props {
   noindex?: boolean;
 }
 const { title, description = SITE.description, image = '/og.png', type = 'website', jsonld, noindex = false } = Astro.props;
-const fullTitle = title ? `${title} · ${SITE.name}` : SITE.name;
+const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name} | Humanoid Robotics Researcher`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image, Astro.site);
 const path = Astro.url.pathname;
@@ -60,7 +60,7 @@ const current = (href: string) => (href === '/' ? path === '/' : path.startsWith
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:title" content={title ?? SITE.name} />
+    <meta property="og:title" content={title ?? fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />

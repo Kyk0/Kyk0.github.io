@@ -19,6 +19,8 @@ links:
     url: mailto:kkolesni@kent.edu
   - label: GitHub
     url: https://github.com/Kyk0
+  - label: Hugging Face
+    url: https://huggingface.co/Kyry10
   - label: LinkedIn
     url: https://www.linkedin.com/in/kyrylo-kolesnichenko/
   - label: X
