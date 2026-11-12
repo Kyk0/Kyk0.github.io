@@ -21,7 +21,6 @@ export default defineConfig({
     customPages: [
       'https://kyry.me/sonic-k1/',
       'https://kyry.me/isaaclab-h100/',
-      'https://kyry.me/robot-dance-workshop/',
     ],
     filter: (page) => !pendingProjects.has(new URL(page).pathname),
   })],
