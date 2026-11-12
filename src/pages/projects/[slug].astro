@@ -49,7 +49,7 @@ const jsonld = {
 };
 const scholar = p.papers.length === 1 ? p.papers[0] : undefined;
 ---
-<Base title={p.title} description={p.summary} type="article" image={image} jsonld={jsonld}>
+<Base title={p.title} description={p.summary} type="article" image={image} jsonld={jsonld} noindex={p.soon}>
   {scholar && (
     <Fragment slot="head">
       <meta name="citation_title" content={scholar.title} />

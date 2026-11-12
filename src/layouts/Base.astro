@@ -17,8 +17,9 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   jsonld?: object | object[]; // schema.org structured data for this page
+  noindex?: boolean;
 }
-const { title, description = SITE.description, image = '/og.png', type = 'website', jsonld } = Astro.props;
+const { title, description = SITE.description, image = '/og.png', type = 'website', jsonld, noindex = false } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE.name}` : SITE.name;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image, Astro.site);
@@ -45,6 +46,7 @@ const current = (href: string) => (href === '/' ? path === '/' : path.startsWith
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <meta name="author" content={SITE.name} />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#f4f4f1" media="(prefers-color-scheme: light)" />
