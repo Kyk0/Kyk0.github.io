@@ -1,12 +1,42 @@
-title: Teaching and outreach
+title: Teaching, presentations and outreach
 order: 9
 entries:
-  - what: "University-wide workshop \"Teach a robot your dance\": humanoid robot learning from a phone video to the real robot (4 hours, about 13 participants)"
-    where: Kent State University
-    when: Oct 2026
-  - what: 3 workshops for lab members (2 on humanoid learning, 1 on reinforcement learning)
-    where: Advanced Telerobotics Research Lab, Kent State University
-    when: Fall 2026
-  - what: Represented the ATR Lab and the Department of Computer Science at Preview Day with the Booster K1 (covered by Fox 8)
-    where: Kent State University
-    when: Oct 2026
+- what: 'University-wide workshop "Teach a robot your dance": humanoid robot learning from a phone video to the real robot
+    (4 hours, about 13 participants)'
+  where: Kent State University
+  when: Oct 2026
+- what: 3 workshops for lab members (2 on humanoid learning, 1 on reinforcement learning)
+  where: Advanced Telerobotics Research Lab, Kent State University
+  when: Summer–Fall 2026
+- what: 'Presented “Show-Ready Humanoids: Interactive and Customizable Robot Performers for Events and Entertainment” at Innovation
+    Day 2026'
+  where: University of Akron
+  place: Akron, OH, USA
+  when: Oct 29, 2026
+  links:
+  - label: event
+    url: https://event.fourwaves.com/innovationday2026/pages/322d9965-376d-4bb5-b40c-ee15fae7c018
+- what: Represented the ATR Lab and the Department of Computer Science at Preview Day with the Booster K1 (covered by Fox
+    8)
+  where: Kent State University
+  when: Oct 2026
+- what: Presented a Late Breaking Results poster on learning expressive humanoid locomotion from monocular runway videos
+  where: IEEE/RSJ IROS 2026
+  place: Pittsburgh, PA, USA
+  when: Sep 2026
+  links:
+  - label: poster presentation
+    url: /blog/iros-2026-lbr-poster/
+- what: Presented our study of knowledge bias in open vision-language models
+  where: IVUS 2026
+  place: Kaunas, Lithuania
+  when: May 2026
+  links:
+  - label: presentation
+    url: /blog/ivus-2026-talk/
+- what: Featured in a Vilnius University article about humanoid robotics research at Kent State
+  where: Vilnius University
+  when: Nov 2026
+  links:
+  - label: article
+    url: https://www.vu.lt/en/all-news/how-do-you-teach-a-robot-to-walk-a-vilnius-university-student-sought-answers-in-the-us

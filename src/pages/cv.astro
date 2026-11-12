@@ -91,6 +91,7 @@ const after = sections.filter((s) => s.data.order > 5);
               : (e.where || e.place) && <span class="where">{[e.where, e.place].filter(Boolean).join(', ')}</span>}
             {e.note && !hideTodo(e.note) && (e.note.startsWith('TODO') ? <span class="note"><span class="todo">{e.note}</span></span> : <span class="note">{e.note}</span>)}
             {e.bullets.length > 0 && <ul>{e.bullets.map((b) => <li>{b}</li>)}</ul>}
+            {e.links.length > 0 && <p class="meta">{e.links.map((l, i) => <>{i > 0 && ' · '}<a href={l.url}>{l.label}</a></>)}</p>}
           </div>
         ))
       )}
