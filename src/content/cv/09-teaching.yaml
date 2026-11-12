@@ -8,14 +8,6 @@ entries:
 - what: 3 workshops for lab members (2 on humanoid learning, 1 on reinforcement learning)
   where: Advanced Telerobotics Research Lab, Kent State University
   when: Summer–Fall 2026
-- what: 'Presented “Show-Ready Humanoids: Interactive and Customizable Robot Performers for Events and Entertainment” at Innovation
-    Day 2026'
-  where: University of Akron
-  place: Akron, OH, USA
-  when: Oct 29, 2026
-  links:
-  - label: event
-    url: https://event.fourwaves.com/innovationday2026/pages/322d9965-376d-4bb5-b40c-ee15fae7c018
 - what: Represented the ATR Lab and the Department of Computer Science at Preview Day with the Booster K1 (covered by Fox
     8)
   where: Kent State University
