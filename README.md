@@ -126,8 +126,10 @@ IPs or usernames of the lab machines in guides.
 ## Replace the CV
 
 - **HTML CV** (`/cv/`): one YAML file per section in `src/content/cv/`. `order` sets the
-  position. Publications (position 4) and projects (position 5) come from the project
-  files automatically. Set `compact: true` for a label/value list like skills.
+  position. Publications (position 4) come from project files automatically; the selected
+  projects (position 5) live in `05-projects.yaml` so the web CV can follow the PhD CV,
+  including the bachelor's thesis. CV entries support `links` with a label and URL.
+  Set `compact: true` for a label/value list like skills.
 - **PDF** (`/cv.pdf`): built from the LaTeX in `~/CV-storage/cv` (`tectonic -X compile main.tex`)
   on a copy with two changes: the email in `sections/heading.tex` is kkolesni@kent.edu (not
   the gmail), and the paper under review is listed only as "One paper, IEEE ICRA 2027, under review." (its bullet in

@@ -1,15 +1,16 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import { SITE, sortProjects, getPapers, range, isTodo, hideTodo } from '../lib/util';
+import { SITE, sortProjects, getPapers, isTodo, hideTodo } from '../lib/util';
 
 const sections = (await getCollection('cv')).sort((a, b) => a.data.order - b.data.order);
 const pubs = (await getPapers()).map((x) => x.paper);
 const projects = sortProjects(await getCollection('projects', (p) => !p.data.soon));
 const bio = (await getEntry('meta', 'bio'))!;
 const links = bio.data.links?.filter((l) => l.url && !l.url.endsWith('.pdf')) ?? [];
+const selectedProjects = (await getEntry('cv', '05-projects'))!.data;
 
-// Publications (order 4) and projects (order 5) come from the project files.
+// Publications come from project files; the CV project selection has its own YAML.
 const before = sections.filter((s) => s.data.order < 4);
 const after = sections.filter((s) => s.data.order > 5);
 ---
@@ -46,6 +47,9 @@ const after = sections.filter((s) => s.data.order > 5);
           ))}
           “{/[.?!]$/.test(p.title) ? p.title : `${p.title}.`}” <em>{p.venue}</em>, {p.year}{p.status && `, ${p.status}`}.
           {p.arxiv && <> <a href={`https://arxiv.org/abs/${p.arxiv}`} class="meta">arXiv:{p.arxiv}</a></>}
+          {p.pdf && <> <a href={p.pdf} class="meta">pdf</a></>}
+          {p.code && <> <a href={p.code} class="meta">code</a></>}
+          {p.video && <> <a href={p.video} class="meta">video</a></>}
         </li>
       ))}
     </ol>
@@ -54,11 +58,13 @@ const after = sections.filter((s) => s.data.order > 5);
 
   <section>
     <h2>Selected projects</h2>
-    {projects.filter((p) => p.data.featured).map((p) => (
+    {selectedProjects.entries.map((p) => (
       <div class="cv-entry">
-        <span><strong><a href={`/projects/${p.id}/`}>{p.data.title}</a></strong></span>
-        {!hideTodo(p.data.start) && <span class:list={['meta when', { todo: isTodo(p.data.start) }]}>{range(p.data.start, p.data.end)}</span>}
-        <span class="note">{p.data.summary}</span>
+        <strong>{p.what}</strong>
+        {p.when && <span class="meta when">{p.when}</span>}
+        {p.note && <span class="note">{p.note}</span>}
+        {p.bullets.length > 0 && <ul>{p.bullets.map((b) => <li>{b}</li>)}</ul>}
+        {p.links.length > 0 && <p class="meta">{p.links.map((l, i) => <>{i > 0 && ' · '}<a href={l.url}>{l.label}</a></>)}</p>}
       </div>
     ))}
     <p class="cv-note"><a href="/projects/">All {projects.length} projects</a></p>

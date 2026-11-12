@@ -1,11 +1,18 @@
 title: Research experience
 order: 2
 entries:
-  - what: Robotics Researcher
-    where: Advanced Telerobotics Research Lab, Kent State University (advisor Jong-Hoon Kim)
-    place: Kent, OH, USA
-    when: Mar 2026 – present
-    bullets:
-      - "Built and open-sourced a video-to-humanoid pipeline that turns one monocular runway clip into a walking policy: 3D motion recovery (GVHMR), retargeting (GMR), motion-tracking RL in Isaac Lab (BeyondMimic), MuJoCo sim-to-sim validation, then the real Booster K1."
-      - "The learned catwalk gait finished 20/20 consecutive 5 m hardware trials with no falls and walks with crossover steps: step width −0.8 to 1.8 cm against 5.1 to 11.4 cm for the stock controller (IROS 2026 Late Breaking Results, first author)."
-      - "Stylized and teleoperable locomotion for the K1 in mjlab: a catwalk style with adversarial motion priors, a legs-only policy that leaves the arms to a teleoperator, and walking policies fine-tuned for 3D-printed heel shoes."
+- what: Undergraduate Robotics Researcher
+  where: Advanced Telerobotics Research Lab, Kent State University (advisor Dr. Jong-Hoon Kim)
+  place: Kent, OH, USA
+  when: Mar 2026 – present
+  note: Part-time, remote since Nov 2026.
+  bullets:
+  - Lead K1/G1 humanoid RL and motion tracking from simulation to hardware (SONIC, BeyondMimic, Kimodo); first author and
+    co-author of robotics research papers.
+  - Open-sourced a video-to-humanoid pipeline combining monocular motion recovery (GVHMR), GMR retargeting, reinforcement
+    learning in Isaac Lab/BeyondMimic, and MuJoCo validation. Tested on the real K1 in consecutive hardware runs without falls,
+    producing crossover steps narrower than the stock controller’s gait.
+  - Co-authored a controlled Pepper LLM/HRI study of motivational interviewing and empathy (IHCI 2026, accepted).
+  - Led a university-wide robot-learning workshop (13+ participants) and multiple ATR Lab workshops. Featured in a Vilnius
+    University article; designed robot footwear, won a robot fashion hackathon award and represented the lab at Kent State
+    Preview Day (Fox 8 coverage).

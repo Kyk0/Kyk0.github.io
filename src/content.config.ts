@@ -111,6 +111,7 @@ const cv = defineCollection({
         when: z.string().optional(),
         note: z.string().optional(),
         bullets: z.array(z.string()).default([]),
+        links: z.array(link).default([]),
       }),
     ),
   }),

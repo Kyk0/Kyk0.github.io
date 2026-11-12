@@ -2,13 +2,11 @@ title: Technical skills
 order: 7
 compact: true
 entries:
-  - what: Robots
-    note: Booster K1 (lab fleet of six), Unitree G1, Pepper
-  - what: Robotics / RL
-    note: Isaac Lab/Sim, mjlab, MuJoCo, ROS 2, PPO/RSL-RL, AMP, BeyondMimic, NVIDIA SONIC, GVHMR, GMR, sim-to-real
-  - what: ML / AI
-    note: PyTorch, Hugging Face, vLLM, ONNX Runtime, OpenCV, scikit-learn, TensorFlow, LLMs, VLMs, RAG, FAISS
-  - what: Languages
-    note: Python, SQL, JavaScript/TypeScript, Bash, R, LaTeX
-  - what: Systems
-    note: Linux, Git, Docker, conda, CMake, CUDA, H100 GPU servers, FastAPI, PostgreSQL, React, Node.js, CAD, 3D printing
+- what: Robotics / RL
+  note: Isaac Lab/Sim, MuJoCo, mjlab, ROS 2, Nav2, PPO/RSL-RL, AMP, BeyondMimic, SONIC, URDF/USD/MJCF
+- what: ML / LLMs
+  note: PyTorch, TensorFlow, Hugging Face, vLLM, ONNX, OpenCV, scikit-learn, RAG, FAISS, tool calling, structured outputs
+- what: Programming
+  note: Python, C++, SQL, JavaScript/TypeScript, Bash, R, LaTeX
+- what: Systems / Web
+  note: Linux, Git, Docker, CUDA, H100, FastAPI, PostgreSQL, React, Node.js, CAD, 3D printing

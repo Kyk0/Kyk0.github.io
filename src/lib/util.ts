@@ -3,7 +3,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 export const SITE = {
   name: 'Kyrylo Kolesnichenko',
   description:
-    'Kyrylo Kolesnichenko, undergraduate researcher in humanoid robot learning at the Advanced Telerobotics Research Lab, Kent State University (B.Sc., Vilnius University). Learned locomotion, expressive gaits, robot footwear.',
+    'Kyrylo Kolesnichenko, undergraduate robotics researcher in humanoid robot learning at the Advanced Telerobotics Research Lab, Kent State University (B.Sc., Vilnius University). Learned locomotion, expressive gaits, robot footwear.',
   me: 'Kolesnichenko',
   x: '@kyry_D',
   // Cloudflare Web Analytics token (dash.cloudflare.com → Analytics & Logs → Web Analytics →

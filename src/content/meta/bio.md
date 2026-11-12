@@ -1,7 +1,7 @@
 ---
 title: Kyrylo Kolesnichenko
-role: Undergraduate researcher, humanoid robot learning
-updated: "2026-10-23"
+role: Undergraduate Robotics Researcher, humanoid robot learning
+updated: "2026-11-12"
 portrait:
   src: /media/me.jpg
   alt: Portrait of Kyrylo Kolesnichenko

@@ -1,0 +1,36 @@
+title: Selected projects
+order: 5
+entries:
+- what: 'SONIC-K1: Motion Tracker for the Booster K1'
+  when: Oct 2026
+  note: NVIDIA SONIC, Isaac Lab, H100, MuJoCo, ONNX
+  bullets:
+  - 'First open-weights K1 tracker: SONIC/G1 port, trained from scratch on approximately 10,000 retargeted mocap clips in
+    approximately 100 GPU-hours on one shared H100 (under 1% of SONIC compute).'
+  - 'Unseen success in MuJoCo under the SONIC rule: 97.4% of 1,985 held-out clips; 93.6% external PHUMA; 99.0% 100STYLE. 95.9%
+    under combined simulated hardware constraints; GPU-free laptop ONNX inference.'
+  links:
+  - label: code
+    url: https://github.com/Kyk0/sonic-k1
+  - label: weights
+    url: https://huggingface.co/Kyry10/sonic-k1
+  - label: project
+    url: /projects/sonic-k1/
+- what: LLM-Based Technical Assistant for Robotics Software Development
+  when: In progress
+  note: Bachelor’s thesis
+  bullets:
+  - Developing a locally hosted LLM-based assistant that combines robotics knowledge retrieval with context-aware generation
+    to support implementation and troubleshooting. Planned evaluation targets technical accuracy and source traceability.
+- what: Stylized and Teleoperable Locomotion for the Booster K1
+  when: 2026 – present
+  note: AMP, mjlab, PPO, MuJoCo, CAD
+  bullets:
+  - 'Trained and deployed multiple locomotion policies, including stylized catwalks, VR teleop and footwear balance, with
+    SONIC fine-tuning. Simulated falls: under 2.5% in teleop and 3.9% in heels; designed and tested shoes, including heels
+    and clogs.'
+  links:
+  - label: code
+    url: https://github.com/Kyk0/booster_mjlab/tree/k1-teleop-and-heels
+  - label: project
+    url: /projects/k1-loco-teleop/
