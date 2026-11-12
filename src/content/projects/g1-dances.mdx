@@ -1,0 +1,33 @@
+---
+title: G1 Dances
+summary: 893 dances from the AIST Dance Video Database, retargeted to the Unitree G1 humanoid, each tracked zero-shot by NVIDIA SONIC in simulation. 10 styles, 2.8 hours, free on Hugging Face.
+start: "2026-11"
+robots: [Unitree G1]
+status: released (dataset)
+role: "Everything: retargeting bake-off, SONIC evaluation, selection, renders, website, release."
+stack: [Python, MuJoCo, PHUMA / PhySINK, NVIDIA SONIC, NumPy]
+links:
+  - { label: website, url: "https://kyry.me/g1-dances/" }
+  - { label: 3D viewer, url: "https://kyry.me/g1-dances/viewer/" }
+  - { label: dataset, url: "https://huggingface.co/datasets/Kyry10/g1-dances" }
+  - { label: HF Space, url: "https://huggingface.co/spaces/Kyry10/g1-dances" }
+  - { label: release post, url: /blog/g1-dances-release/ }
+media:
+  src: /media/g1-dances/hero_web.mp4
+  poster: /media/g1-dances/hero_web.jpg
+  alt: A Unitree G1 dancing with a motion trail, then a grid that grows from one to 128 G1 robots dancing different AIST++ dances
+  caption: "One dancer, then 128 different dances. Retargeted AIST++ motions on the Unitree G1, MuJoCo."
+order: 16
+---
+
+The dances come from the [AIST Dance Video Database](https://aistdancedb.ongaaccel.jp/) by AIST, through the
+[AIST++](https://google.github.io/aistplusplus_dataset/) 3D annotations. I retargeted all 1,363 usable clips to the
+29-DoF Unitree G1 with PhySINK from PHUMA, chosen in a bake-off against GMR and UMR, and ran each one through NVIDIA's
+released SONIC controller in MuJoCo without fine-tuning. The 893 clips it tracks are the dataset: 10 styles, about
+2.8 hours, NPZ joint trajectories at 60 fps. All 893 can be played in 3D in the browser in the [viewer](https://kyry.me/g1-dances/viewer/).
+
+Everything is simulation only. With a 30 ms action delay, success on held-out dancers dropped from 64.7% to 17.3%,
+so latency robustness is still open before this goes on a real robot.
+
+If you use the data, you must cite Tsuchida et al., *AIST Dance Video Database*, ISMIR 2019. Commercial use is
+subject to the [AIST Dance DB Terms of Use](https://aistdancedb.ongaaccel.jp/terms_of_use/).
