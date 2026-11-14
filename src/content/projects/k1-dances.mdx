@@ -1,0 +1,34 @@
+---
+title: K1 Dances
+summary: 1046 dances from the AIST Dance Video Database, retargeted to the Booster K1 humanoid, each tracked zero-shot by SONIC-K1 in simulation. 10 styles, 3.1 hours.
+start: "2026-11"
+robots: [Booster K1]
+status: released (dataset)
+role: "Everything: retargeting, SONIC-K1 evaluation, selection, renders, website, release."
+stack: [Python, MuJoCo, UMR, SONIC-K1, NumPy]
+links:
+  - { label: website, url: "https://kyry.me/k1-dances/" }
+  - { label: 3D viewer, url: "https://kyry.me/k1-dances/viewer/" }
+  - { label: dataset, url: "https://huggingface.co/datasets/Kyry10/k1-dances" }
+  - { label: HF Space, url: "https://huggingface.co/spaces/Kyry10/k1-dances" }
+  - { label: release post, url: /blog/k1-dances-release/ }
+media:
+  src: /media/k1-dances/hero_web.mp4
+  poster: /media/k1-dances/hero_web.jpg
+  alt: A Booster K1 dancing with a motion trail, then a grid that grows from one to 128 K1 robots dancing different AIST++ dances
+  caption: "One dancer, then 128 different dances. Retargeted AIST++ motions on the Booster K1, MuJoCo."
+order: 15
+---
+
+The companion of [G1 Dances](/projects/g1-dances/) for the Booster K1. The dances come from the
+[AIST Dance Video Database](https://aistdancedb.ongaaccel.jp/) by AIST, through the
+[AIST++](https://google.github.io/aistplusplus_dataset/) 3D annotations. I retargeted all 1,363 usable clips to the
+22-DoF K1 with [UMR](https://github.com/hanyang9/UMR) and ran each one through [SONIC-K1](/projects/sonic-k1/) v1.0 in
+MuJoCo without fine-tuning. The 1046 clips it tracks (76.7%) are the dataset: 10 styles, about 3.1 hours, NPZ
+joint trajectories at 60 fps. All of them can be played in 3D in the browser in the [viewer](https://kyry.me/k1-dances/viewer/).
+
+Everything is simulation only, and tracking was checked without action delay. SONIC-K1 itself runs on a real K1,
+but these dances have not been run on one yet.
+
+If you use the data, you must cite Tsuchida et al., *AIST Dance Video Database*, ISMIR 2019. Commercial use is
+subject to the [AIST Dance DB Terms of Use](https://aistdancedb.ongaaccel.jp/terms_of_use/).
