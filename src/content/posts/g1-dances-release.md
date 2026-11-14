@@ -3,7 +3,7 @@ title: "Released: G1 Dances, 893 AIST++ dances for the Unitree G1"
 date: "2026-11-12"
 kind: release
 where: Advanced Telerobotics Research Lab
-summary: 893 dances from the AIST Dance Video Database, retargeted to the Unitree G1 and tracked zero-shot by NVIDIA SONIC in simulation. 10 styles, 2.8 hours, free on Hugging Face.
+summary: 893 dances from the AIST Dance Video Database, retargeted to the Unitree G1 and tracked zero-shot by NVIDIA SONIC in simulation. 10 styles, 2.8 hours.
 links:
   - { label: website, url: "https://kyry.me/g1-dances/" }
   - { label: 3D viewer, url: "https://kyry.me/g1-dances/viewer/" }
@@ -16,8 +16,8 @@ media:
   caption: From one dancer to 128 different dances. MuJoCo.
 ---
 
-[G1 Dances](https://kyry.me/g1-dances/) is a set of 893 dance motions for the Unitree G1 humanoid, free on
-[Hugging Face](https://huggingface.co/datasets/Kyry10/g1-dances) with no login.
+[G1 Dances](https://kyry.me/g1-dances/) is a set of 893 dance motions for the Unitree G1 humanoid, on
+[Hugging Face](https://huggingface.co/datasets/Kyry10/g1-dances).
 
 - 893 dances, 10 styles (House, Break, Waack, Krump, Pop, Lock, LA-style and Middle hip-hop, Street and Ballet jazz), about 2.8 hours;
 - from the [AIST Dance Video Database](https://aistdancedb.ongaaccel.jp/) by AIST, via AIST++, retargeted to the 29-DoF G1 with PhySINK (PHUMA);

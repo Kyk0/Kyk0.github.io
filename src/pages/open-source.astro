@@ -1,0 +1,199 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Media from '../components/Media.astro';
+
+// Everything released openly: datasets, weights, code and robot models.
+// `project` is the project page it belongs to (its top media is the thumbnail).
+type Item = { title: string; text: string; project?: string; links: { label: string; url: string }[] };
+const groups: { id: string; title: string; items: Item[] }[] = [
+  {
+    id: 'datasets',
+    title: 'Datasets',
+    items: [
+      {
+        title: 'G1 Dances',
+        text: '893 dances from the AIST Dance Video Database, retargeted to the Unitree G1 and tracked zero-shot by NVIDIA SONIC in simulation. 10 styles, 2.8 hours.',
+        project: 'g1-dances',
+        links: [
+          { label: 'dataset', url: 'https://huggingface.co/datasets/Kyry10/g1-dances' },
+          { label: '3D viewer', url: 'https://kyry.me/g1-dances/viewer/' },
+          { label: 'website', url: 'https://kyry.me/g1-dances/' },
+        ],
+      },
+      {
+        title: 'K1 Dances',
+        text: '1046 dances from the AIST Dance Video Database, retargeted to the Booster K1 and tracked zero-shot by SONIC-K1 in simulation. 10 styles, 3.1 hours.',
+        project: 'k1-dances',
+        links: [
+          { label: 'dataset', url: 'https://huggingface.co/datasets/Kyry10/k1-dances' },
+          { label: '3D viewer', url: 'https://kyry.me/k1-dances/viewer/' },
+          { label: 'website', url: 'https://kyry.me/k1-dances/' },
+        ],
+      },
+      {
+        title: 'K1 Moves',
+        text: '58 clips (14 min) of dances, emotes, styled walks and karate for the Booster K1, each tracked by SONIC-K1 with no per-motion training.',
+        project: 'sonic-k1',
+        links: [{ label: 'dataset', url: 'https://huggingface.co/datasets/Kyry10/k1-moves' }],
+      },
+      {
+        title: 'RFCP dataset',
+        text: 'A runway catwalk for the Unitree G1 (walk, turn, pose, walk back), in SONIC’s format.',
+        project: 'rfcp',
+        links: [{ label: 'dataset', url: 'https://huggingface.co/datasets/Kyry10/rfcp-dataset' }],
+      },
+    ],
+  },
+  {
+    id: 'weights',
+    title: 'Policies and weights',
+    items: [
+      {
+        title: 'SONIC-K1',
+        text: 'Open-weights whole-body motion tracker for the Booster K1, ported from NVIDIA SONIC.',
+        project: 'sonic-k1',
+        links: [
+          { label: 'code', url: 'https://github.com/Kyk0/sonic-k1' },
+          { label: 'weights', url: 'https://huggingface.co/Kyry10/sonic-k1' },
+        ],
+      },
+      {
+        title: 'RFCP, Robot Fashion Catwalk Policy',
+        text: 'A SONIC fine-tune that walks the Unitree G1 down a runway, turns, poses and walks back.',
+        project: 'rfcp',
+        links: [
+          { label: 'code', url: 'https://github.com/Kyk0/rfcp' },
+          { label: 'policy + ONNX', url: 'https://huggingface.co/Kyry10/rfcp' },
+        ],
+      },
+      {
+        title: 'Microduck Arena Lab',
+        text: 'Faster running gaits for Pollen Robotics’ Microduck on three simulated race courses.',
+        project: 'microduck-arena-lab',
+        links: [{ label: 'code and weights', url: 'https://huggingface.co/Kyry10/microduck-arena-lab' }],
+      },
+    ],
+  },
+  {
+    id: 'code',
+    title: 'Code and hardware',
+    items: [
+      {
+        title: 'Expressive Motion',
+        text: 'From a monocular runway video to a catwalk gait on the Booster K1.',
+        project: 'expressive-motion',
+        links: [
+          { label: 'code', url: 'https://github.com/Kyk0/expressive-motion' },
+          { label: 'code (ATR Lab)', url: 'https://github.com/ATR-Lab/expressive-motion' },
+        ],
+      },
+      {
+        title: 'K1 Loco-Teleop and heel walking',
+        text: 'A legs-only walking policy for the Booster K1 that leaves the arms free for teleoperation, and walking in heel shoes.',
+        project: 'k1-loco-teleop',
+        links: [{ label: 'code', url: 'https://github.com/Kyk0/booster_mjlab/tree/k1-teleop-and-heels' }],
+      },
+      {
+        title: 'K1 Shoes',
+        text: '3D-printable heels, Dutch clogs and a vine pair for the Booster K1, with MuJoCo models.',
+        project: 'k1-shoes',
+        links: [
+          { label: 'heel files', url: 'https://github.com/Kyk0/k1-heel-shoes' },
+          { label: 'clog and vine files', url: 'https://github.com/Kyk0/k1-klompen' },
+        ],
+      },
+      {
+        title: 'Structured prompting and knowledge bias in VLMs',
+        text: 'Code and results: four open-source VLMs, five prompting strategies, the VLMBias benchmark.',
+        project: 'vlm-bias',
+        links: [{ label: 'code', url: 'https://github.com/Kyk0/structured-prompting-vlm-bias' }],
+      },
+    ],
+  },
+  {
+    id: 'workshops',
+    title: 'Workshops',
+    items: [
+      {
+        title: 'Humanoid robot learning workshops',
+        text: 'Slides from my workshops at Kent State, for the ATR Lab and the whole university: humanoid motion training (84 slides) and reinforcement learning for humanoids (49 slides).',
+        project: 'workshops',
+        links: [
+          { label: 'motion training slides', url: 'https://github.com/Kyk0/Kyk0.github.io/releases/download/workshop-slides-2026/humanoid-motion-training.pptx' },
+          { label: 'RL slides', url: 'https://github.com/Kyk0/Kyk0.github.io/releases/download/workshop-slides-2026/reinforcement-learning-humanoids.pptx' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'models',
+    title: 'Robot models and guides',
+    items: [
+      {
+        title: 'Unitree G1 USD for Isaac Lab',
+        text: 'The G1 exactly as NVIDIA SONIC uses it, ready to load without URDF conversion.',
+        links: [{ label: 'model', url: 'https://huggingface.co/datasets/Kyry10/unitree-g1-usd' }],
+      },
+      {
+        title: 'Booster K1 USD for Isaac Lab',
+        text: 'The K1 exactly as SONIC-K1 uses it, ready to load without URDF conversion.',
+        links: [{ label: 'model', url: 'https://huggingface.co/datasets/Kyry10/booster-k1-usd' }],
+      },
+      {
+        title: 'Isaac Lab on H100',
+        text: 'Training Isaac Lab 2.x policies headless on H100 GPUs: what works and which errors are harmless.',
+        links: [
+          { label: 'guide', url: 'https://kyry.me/isaaclab-h100/' },
+          { label: 'code', url: 'https://github.com/Kyk0/isaaclab-h100' },
+        ],
+      },
+    ],
+  },
+];
+const projects = new Map((await getCollection('projects')).map((p) => [p.id, p]));
+---
+<Base title="Open source" description="Datasets, policy weights, code and robot models released by Kyrylo Kolesnichenko: G1 Dances, K1 Dances, K1 Moves, SONIC-K1 and more.">
+  <header class="page-head">
+    <h1>Open source</h1>
+    <p class="lede">Datasets, policy weights, code, robot models and workshop slides I have released. Each links to its project page.</p>
+  </header>
+  {groups.map((g) => (
+    <section>
+      <h2 class="year" id={g.id}>{g.title}</h2>
+      <ul class="pubs">
+        {g.items.map((it) => {
+          const p = it.project ? projects.get(it.project) : undefined;
+          const m = p?.data.media;
+          const href = p ? `/projects/${p.id}/` : undefined;
+          return (
+            <li class:list={['pub', { 'has-teaser': m }]}>
+              {m && (
+                <a href={href} class="pub-teaser" tabindex="-1" aria-hidden="true">
+                  <Media src={m.src} alt={m.alt} poster={m.poster} thumb />
+                </a>
+              )}
+              <div class="citation">
+                <span class="pub-title">{it.title}</span>
+                <span class="pub-venue">{it.text}</span>
+                <span class="pub-links meta">
+                  {it.links.map((l) => <a href={l.url}>{l.label}</a>)}
+                  {href && <a href={href}>project</a>}
+                </span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  ))}
+</Base>
+<style>
+  /* media stay whole (site rule), but no taller than a row */
+  .pub-teaser :global(.thumb.media) {
+    width: auto;
+    max-width: 100%;
+    max-height: 6.5rem;
+    margin: 0 auto;
+  }
+</style>
